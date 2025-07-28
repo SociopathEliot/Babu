@@ -9,6 +9,7 @@ import androidx.activity.OnBackPressedCallback
 import be.buithg.etghaifgte.R
 import be.buithg.etghaifgte.databinding.FragmentBlogBinding
 import androidx.navigation.fragment.findNavController
+import be.buithg.etghaifgte.domain.model.BlogItem
 
 
 class BlogFragment : Fragment() {

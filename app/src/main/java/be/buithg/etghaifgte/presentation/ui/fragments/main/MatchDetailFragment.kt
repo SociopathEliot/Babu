@@ -76,8 +76,8 @@ class MatchDetailFragment : Fragment() {
             binding.btnMakeForecast.visibility = View.GONE
         }
         bindMatch(match)
-        val team1Key = match.teamInfo?.getOrNull(0)?.shortname ?: match.teams?.getOrNull(0) ?: ""
-        val team2Key = match.teamInfo?.getOrNull(1)?.shortname ?: match.teams?.getOrNull(1) ?: ""
+        val team1Key = match.teamA
+        val team2Key = match.teamB
         val noteKey = "${team1Key}_${team2Key}_${match.dateTimeGMT ?: ""}"
         noteViewModel.loadNote(noteKey)
         noteViewModel.noteText.observe(viewLifecycleOwner) { text ->
@@ -112,8 +112,8 @@ class MatchDetailFragment : Fragment() {
 
             selectedTeam = null
 
-            val team1 = match.teamInfo?.getOrNull(0)?.shortname ?: match.teams?.getOrNull(0) ?: ""
-            val team2 = match.teamInfo?.getOrNull(1)?.shortname ?: match.teams?.getOrNull(1) ?: ""
+            val team1 = match.teamA
+            val team2 = match.teamB
             dialogBinding.teamAText.text = team1
             dialogBinding.teamBText.text = team2
 
@@ -152,8 +152,8 @@ class MatchDetailFragment : Fragment() {
                 val city = venueParts.getOrNull(1) ?: ""
 
                 val entity = PredictionEntity(
-                    teamA = team1,
-                    teamB = team2,
+                    teamA = team1.toString(),
+                    teamB = team2.toString(),
                     dateTime = match.dateTimeGMT ?: "",
                     matchType = match.matchType ?: "",
                     stadium = stadium,

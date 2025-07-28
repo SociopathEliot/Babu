@@ -37,23 +37,31 @@ class PredictionsViewModel @Inject constructor(
     private var filterDate: LocalDate? = null
 
     private fun winnerTeam(match: Match): Int {
-        val team1 = match.teamInfo?.getOrNull(0)?.shortname ?: match.teams?.getOrNull(0) ?: ""
-        val team2 = match.teamInfo?.getOrNull(1)?.shortname ?: match.teams?.getOrNull(1) ?: ""
+        // 1 — teamA, 2 — teamB, 0 — ничья или неизвестно
 
-        val scores = match.score ?: emptyList()
-        if (scores.size >= 2) {
-            val score1 = scores[0].r
-            val score2 = scores[1].r
-            if (score1 > score2) return 1
-            if (score2 > score1) return 2
+        val a = match.scoreA
+        val b = match.scoreB
+
+        // если оба счёта известны, пользуемся ими
+        if (a != null && b != null) {
+            return when {
+                a > b  -> 1
+                b > a  -> 2
+                else   -> 0  // равный счёт — ничья
+            }
         }
 
-        val status = match.status?.lowercase() ?: ""
+        // если матч уже закончился, но вдруг нет числовых полей,
+        // можно попытаться вытащить из текстового статуса
+        val lowerStatus = match.status?.lowercase() ?: ""
+        val teamALower = match.teamA?.lowercase() ?: ""
+        val teamBLower = match.teamB?.lowercase() ?: ""
+
         return when {
-            status.contains(team1.lowercase()) -> 1
-            status.contains(team2.lowercase()) -> 2
-            status.contains("draw") -> 0
-            else -> 0
+            lowerStatus.contains("draw") || lowerStatus.contains("ничья") -> 0
+            lowerStatus.contains(teamALower) -> 1
+            lowerStatus.contains(teamBLower) -> 2
+            else                             -> 0
         }
     }
 
