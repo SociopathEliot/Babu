@@ -11,9 +11,11 @@ import androidx.recyclerview.widget.RecyclerView
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-class CricketAdapter(
-    private val items: ArrayList<Data>,
-    private val onItemClick: (Data) -> Unit
+import be.buithg.etghaifgte.domain.model.Match
+
+class MatchAdapter(
+    private val items: ArrayList<Match>,
+    private val onItemClick: (Match) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private companion object {
@@ -29,7 +31,7 @@ class CricketAdapter(
         val inflater = LayoutInflater.from(parent.context)
         return if (viewType == TYPE_MATCH) {
             val binding = MatchItemBinding.inflate(inflater, parent, false)
-            CricketViewHolder(binding)
+            MatchViewHolder(binding)
         } else {
             val binding = be.buithg.etghaifgte.databinding.ItemEmptyStateBinding.inflate(
                 inflater,
@@ -45,48 +47,38 @@ class CricketAdapter(
     override fun getItemViewType(position: Int): Int = if (items.isEmpty()) TYPE_EMPTY else TYPE_MATCH
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if (holder is CricketViewHolder) {
+        if (holder is MatchViewHolder) {
             val item = items[position]
             holder.bind(item, position)
             holder.itemView.setOnClickListener { onItemClick(item) }
         }
     }
 
-    inner class CricketViewHolder(
+    inner class MatchViewHolder(
         private val binding: MatchItemBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: Data, position: Int) {
-//            // 1) Время
-//            val ldt = runCatching { LocalDateTime.parse(item.dateTimeGMT ?: "") }.getOrNull()
-//            val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
-//            binding.tvTime.text = ldt?.format(timeFormatter) ?: "-"
-//
-//            // 2) Статус
-//            val statusText = if (!item.matchEnded) "Upcoming" else item.status ?: "-"
-//            binding.tvStatus.text = statusText.truncate(MAX_STATUS_LEN)
-//
-//            // 3) Лига
-//            val country = item.teamInfo?.getOrNull(0)?.name
-//                ?: item.teams?.getOrNull(0).orEmpty()
-//            binding.tvLeague.text = country
-//            val color = Color.parseColor(leagueColors[position % leagueColors.size])
-//            binding.tvLeague.backgroundTintList = ColorStateList.valueOf(color)
-//
-//            // 4) Описание матча (один TextView вместо двух)
-//            val rawTeam1 = item.teamInfo?.getOrNull(0)?.shortname
-//                ?: item.teams?.getOrNull(0).orEmpty()
-//            val rawTeam2 = item.teamInfo?.getOrNull(1)?.shortname
-//                ?: item.teams?.getOrNull(1).orEmpty()
-//
-//            val t1 = rawTeam1.truncate(MAX_TEAM_LEN)
-//            val t2 = rawTeam2.truncate(MAX_TEAM_LEN)
-//            binding.tvMatchDescription.text = "$t1 – $t2"
+        fun bind(item: Match, position: Int) {
+            val ldt = runCatching { LocalDateTime.parse(item.dateTimeGMT ?: "") }.getOrNull()
+            val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+            binding.tvTime.text = ldt?.format(timeFormatter) ?: "12:29"
+
+            val statusText = if (!item.matchEnded) "Upcoming" else item.status ?: "-"
+            binding.tvStatus.text = statusText.truncate(MAX_STATUS_LEN)
+
+            binding.tvLeague.text = item.league ?: "-"
+            val color = Color.parseColor(leagueColors[position % leagueColors.size])
+            binding.tvLeague.backgroundTintList = ColorStateList.valueOf(color)
+
+            val t1 = item.teamA.orEmpty().truncate(MAX_TEAM_LEN)
+            val t2 = item.teamB.orEmpty().truncate(MAX_TEAM_LEN)
+            binding.tvMatchDescription.text = "$t1 – $t2"
         }
 
         private fun String.truncate(max: Int): String =
             if (length > max) take(max) + "…" else this
-        }
+    }
+
     inner class EmptyViewHolder(binding: be.buithg.etghaifgte.databinding.ItemEmptyStateBinding) :
         RecyclerView.ViewHolder(binding.root)
 }

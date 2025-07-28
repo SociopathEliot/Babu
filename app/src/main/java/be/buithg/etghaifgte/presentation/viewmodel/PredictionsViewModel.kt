@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import be.buithg.etghaifgte.data.local.entity.PredictionEntity
 import be.buithg.etghaifgte.domain.usecase.AddPredictionUseCase
 import be.buithg.etghaifgte.domain.usecase.GetPredictionsUseCase
+import be.buithg.etghaifgte.domain.model.Match
 import be.buithg.etghaifgte.domain.usecase.GetCurrentMatchesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDate
@@ -35,9 +36,7 @@ class PredictionsViewModel @Inject constructor(
 
     private var filterDate: LocalDate? = null
 
-    private val apiKey = "1c5944c7-5c88-4b8c-80f3-c88f198ed725"
-
-    private fun winnerTeam(match: Data): Int {
+    private fun winnerTeam(match: Match): Int {
         val team1 = match.teamInfo?.getOrNull(0)?.shortname ?: match.teams?.getOrNull(0) ?: ""
         val team2 = match.teamInfo?.getOrNull(1)?.shortname ?: match.teams?.getOrNull(1) ?: ""
 
@@ -109,7 +108,7 @@ class PredictionsViewModel @Inject constructor(
         val upcomingList = list.filter { isUpcoming(it) }
         if (upcomingList.isEmpty()) return
 
-        val matches = runCatching { getCurrentMatchesUseCase(apiKey) }.getOrNull() ?: return
+        val matches = runCatching { getCurrentMatchesUseCase() }.getOrNull() ?: return
 
         upcomingList.forEach { prediction ->
             val match = matches.find { it.dateTimeGMT == prediction.dateTime }

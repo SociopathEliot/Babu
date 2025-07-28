@@ -21,6 +21,7 @@ import com.google.android.material.button.MaterialButton
 import be.buithg.etghaifgte.data.local.entity.PredictionEntity
 import be.buithg.etghaifgte.presentation.viewmodel.PredictionsViewModel
 import be.buithg.etghaifgte.presentation.viewmodel.NoteViewModel
+import be.buithg.etghaifgte.domain.model.Match
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -31,23 +32,12 @@ class MatchDetailFragment : Fragment() {
 
     private fun String?.orDash(): String = this?.takeIf { it.isNotBlank() } ?: "-"
 
-    private fun winnerTeam(match: Data): Int {
-        val team1 = match.teamInfo?.getOrNull(0)?.shortname ?: match.teams?.getOrNull(0) ?: ""
-        val team2 = match.teamInfo?.getOrNull(1)?.shortname ?: match.teams?.getOrNull(1) ?: ""
-
-        val scores = match.score ?: emptyList()
-        if (scores.size >= 2) {
-            val score1 = scores[0].r
-            val score2 = scores[1].r
-            if (score1 > score2) return 1
-            if (score2 > score1) return 2
-        }
-
-        val status = match.status?.lowercase() ?: ""
+    private fun winnerTeam(match: Match): Int {
+        val scoreA = match.scoreA ?: return 0
+        val scoreB = match.scoreB ?: return 0
         return when {
-            status.contains(team1.lowercase()) -> 1
-            status.contains(team2.lowercase()) -> 2
-            status.contains("draw") -> 0
+            scoreA > scoreB -> 1
+            scoreB > scoreA -> 2
             else -> 0
         }
     }
@@ -217,7 +207,7 @@ class MatchDetailFragment : Fragment() {
         }
     }
 
-    private fun bindMatch(match: Data) {
+    private fun bindMatch(match: Match) {
         val formatterDate = DateTimeFormatter.ofPattern("dd.MM.yyyy")
         val formatterTime = DateTimeFormatter.ofPattern("HH:mm")
 
@@ -227,21 +217,19 @@ class MatchDetailFragment : Fragment() {
         binding.tvDateValue.text = date?.format(formatterDate) ?: (match.date.orDash())
         binding.tvTimeValue.text = time?.format(formatterTime) ?: (match.dateTimeGMT.orDash())
 
-        val teams = match.teamInfo
-        val team1 = teams?.getOrNull(0)?.shortname ?: match.teams?.getOrNull(0) ?: "-"
-        val team2 = teams?.getOrNull(1)?.shortname ?: match.teams?.getOrNull(1) ?: "-"
+        val team1 = match.teamA ?: "-"
+        val team2 = match.teamB ?: "-"
         binding.teamTitle.text = "$team1 - $team2"
 
         binding.statusText.text = match.status.orDash()
 
-        val venueParts = match.venue?.split(",")?.map { it.trim() } ?: emptyList()
-        val stadium = venueParts.getOrNull(0)?.takeIf { it.isNotBlank() } ?: match.venue.orDash()
-        val city = venueParts.getOrNull(1)?.takeIf { it.isNotBlank() } ?: "-"
+        val stadium = match.venue.orDash()
+        val city = match.city ?: "-"
 
         binding.tvStadiumValue.text = stadium
         binding.tvCityValue.text = city
 
-        val country = teams?.getOrNull(0)?.name ?: match.teams?.getOrNull(0) ?: "-"
+        val country = match.country ?: "-"
         binding.tvCountryValue.text = country
 
         binding.tvMatchTypeValue.text = match.matchType?.uppercase() ?: "-"

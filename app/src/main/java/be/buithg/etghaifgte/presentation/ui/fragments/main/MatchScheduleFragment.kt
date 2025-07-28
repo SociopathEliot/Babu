@@ -14,8 +14,9 @@ import android.view.View
 import android.view.ViewGroup
 import be.buithg.etghaifgte.R
 import be.buithg.etghaifgte.databinding.FragmentMatchScheduleBinding
-import be.buithg.etghaifgte.presentation.ui.adapters.CricketAdapter
+import be.buithg.etghaifgte.presentation.ui.adapters.MatchAdapter
 import be.buithg.etghaifgte.presentation.viewmodel.MatchScheduleViewModel
+import be.buithg.etghaifgte.domain.model.Match
 
 import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
@@ -37,8 +38,8 @@ class MatchScheduleFragment : Fragment() {
     private val viewModel: MatchScheduleViewModel by viewModels()
     private val predictionsViewModel: PredictionsViewModel by viewModels()
     private lateinit var buttons: List<MaterialButton>
-    private lateinit var adapter: CricketAdapter
-    private var allMatches: List<Data> = emptyList()
+    private lateinit var adapter: MatchAdapter
+    private var allMatches: List<Match> = emptyList()
     private var selectedBtn: MaterialButton? = null
     private lateinit var connectivityManager: ConnectivityManager
     private var networkCallback: ConnectivityManager.NetworkCallback? = null
@@ -62,14 +63,14 @@ class MatchScheduleFragment : Fragment() {
         networkCallback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
                 viewLifecycleOwner.lifecycleScope.launch {
-                    viewModel.loadMatches("80112a77-1b12-4356-94a5-806e6db2dc64")
+                    viewModel.loadMatches()
                 }
             }
         }
         connectivityManager.registerDefaultNetworkCallback(networkCallback!!)
 
         if (requireContext().isInternetAvailable()) {
-            viewModel.loadMatches("80112a77-1b12-4356-94a5-806e6db2dc64")
+            viewModel.loadMatches()
         } else {
             Log.e("FFFF", "No Internet connection")
             allMatches = emptyList()
@@ -83,7 +84,7 @@ class MatchScheduleFragment : Fragment() {
         binding.btnRetry.setOnClickListener {
             if (requireContext().isInternetAvailable()) {
                 viewLifecycleOwner.lifecycleScope.launch {
-                    viewModel.loadMatches("80112a77-1b12-4356-94a5-806e6db2dc64")
+                    viewModel.loadMatches()
                 }
             } else {
                 Log.e("FFFF", "No Internet connection")
@@ -163,7 +164,7 @@ class MatchScheduleFragment : Fragment() {
         val filtered = allMatches.filter {
             runCatching { LocalDate.parse(it.date) }.getOrNull() == selectedDate
         }.take(10)
-        adapter = CricketAdapter(ArrayList(filtered)) { match ->
+        adapter = MatchAdapter(ArrayList(filtered)) { match ->
             val action =
                 MatchScheduleFragmentDirections.actionMatchScheduleFragmentToMatchDetailFragment(
                     match,
