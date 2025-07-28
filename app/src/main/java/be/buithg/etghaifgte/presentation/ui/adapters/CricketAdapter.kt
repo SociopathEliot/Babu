@@ -3,7 +3,6 @@ package be.buithg.etghaifgte.presentation.ui.adapters
 import android.graphics.Color
 import android.content.res.ColorStateList
 import be.buithg.etghaifgte.databinding.MatchItemBinding
-import be.buithg.etghaifgte.domain.models.Data
 
 
 import android.view.LayoutInflater
@@ -58,31 +57,31 @@ class CricketAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: Data, position: Int) {
-            // 1) Время
-            val ldt = runCatching { LocalDateTime.parse(item.dateTimeGMT ?: "") }.getOrNull()
-            val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
-            binding.tvTime.text = ldt?.format(timeFormatter) ?: "-"
-
-            // 2) Статус
-            val statusText = if (!item.matchEnded) "Upcoming" else item.status ?: "-"
-            binding.tvStatus.text = statusText.truncate(MAX_STATUS_LEN)
-
-            // 3) Лига
-            val country = item.teamInfo?.getOrNull(0)?.name
-                ?: item.teams?.getOrNull(0).orEmpty()
-            binding.tvLeague.text = country
-            val color = Color.parseColor(leagueColors[position % leagueColors.size])
-            binding.tvLeague.backgroundTintList = ColorStateList.valueOf(color)
-
-            // 4) Описание матча (один TextView вместо двух)
-            val rawTeam1 = item.teamInfo?.getOrNull(0)?.shortname
-                ?: item.teams?.getOrNull(0).orEmpty()
-            val rawTeam2 = item.teamInfo?.getOrNull(1)?.shortname
-                ?: item.teams?.getOrNull(1).orEmpty()
-
-            val t1 = rawTeam1.truncate(MAX_TEAM_LEN)
-            val t2 = rawTeam2.truncate(MAX_TEAM_LEN)
-            binding.tvMatchDescription.text = "$t1 – $t2"
+//            // 1) Время
+//            val ldt = runCatching { LocalDateTime.parse(item.dateTimeGMT ?: "") }.getOrNull()
+//            val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+//            binding.tvTime.text = ldt?.format(timeFormatter) ?: "-"
+//
+//            // 2) Статус
+//            val statusText = if (!item.matchEnded) "Upcoming" else item.status ?: "-"
+//            binding.tvStatus.text = statusText.truncate(MAX_STATUS_LEN)
+//
+//            // 3) Лига
+//            val country = item.teamInfo?.getOrNull(0)?.name
+//                ?: item.teams?.getOrNull(0).orEmpty()
+//            binding.tvLeague.text = country
+//            val color = Color.parseColor(leagueColors[position % leagueColors.size])
+//            binding.tvLeague.backgroundTintList = ColorStateList.valueOf(color)
+//
+//            // 4) Описание матча (один TextView вместо двух)
+//            val rawTeam1 = item.teamInfo?.getOrNull(0)?.shortname
+//                ?: item.teams?.getOrNull(0).orEmpty()
+//            val rawTeam2 = item.teamInfo?.getOrNull(1)?.shortname
+//                ?: item.teams?.getOrNull(1).orEmpty()
+//
+//            val t1 = rawTeam1.truncate(MAX_TEAM_LEN)
+//            val t2 = rawTeam2.truncate(MAX_TEAM_LEN)
+//            binding.tvMatchDescription.text = "$t1 – $t2"
         }
 
         private fun String.truncate(max: Int): String =

@@ -17,7 +17,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(): Retrofit =
         Retrofit.Builder()
-            .baseUrl("https://api.cricapi.com/v1/")
+            .baseUrl("")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 

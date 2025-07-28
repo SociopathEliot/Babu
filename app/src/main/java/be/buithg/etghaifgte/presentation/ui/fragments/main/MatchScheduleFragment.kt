@@ -14,7 +14,6 @@ import android.view.View
 import android.view.ViewGroup
 import be.buithg.etghaifgte.R
 import be.buithg.etghaifgte.databinding.FragmentMatchScheduleBinding
-import be.buithg.etghaifgte.domain.models.Data
 import be.buithg.etghaifgte.presentation.ui.adapters.CricketAdapter
 import be.buithg.etghaifgte.presentation.viewmodel.MatchScheduleViewModel
 

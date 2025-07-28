@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import be.buithg.etghaifgte.R
 import be.buithg.etghaifgte.databinding.FragmentBlogBinding
-import be.buithg.etghaifgte.domain.models.BlogItem
 import androidx.navigation.fragment.findNavController
 
 

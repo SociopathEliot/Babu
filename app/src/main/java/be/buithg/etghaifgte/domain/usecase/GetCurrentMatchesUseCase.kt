@@ -1,6 +1,5 @@
 package be.buithg.etghaifgte.domain.usecase
 
-import be.buithg.etghaifgte.domain.models.Data
 import be.buithg.etghaifgte.domain.repository.MatchRepository
 import javax.inject.Inject
 

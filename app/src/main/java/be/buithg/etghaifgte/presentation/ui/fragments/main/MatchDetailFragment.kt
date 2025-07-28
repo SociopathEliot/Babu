@@ -12,7 +12,6 @@ import androidx.activity.OnBackPressedCallback
 import be.buithg.etghaifgte.R
 import be.buithg.etghaifgte.databinding.DialogPredictWinnerBinding
 import be.buithg.etghaifgte.databinding.FragmentMatchDetailBinding
-import be.buithg.etghaifgte.domain.models.Data
 import androidx.navigation.fragment.navArgs
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels

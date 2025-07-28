@@ -15,8 +15,6 @@ import androidx.core.view.isVisible
 import be.buithg.etghaifgte.data.local.entity.PredictionEntity
 import be.buithg.etghaifgte.presentation.ui.adapters.HistoryAdapter
 import be.buithg.etghaifgte.presentation.viewmodel.PredictionsViewModel
-import be.buithg.etghaifgte.domain.models.Data
-import be.buithg.etghaifgte.domain.models.TeamInfo
 import com.google.android.material.button.MaterialButton
 import java.time.LocalDateTime
 import dagger.hilt.android.AndroidEntryPoint

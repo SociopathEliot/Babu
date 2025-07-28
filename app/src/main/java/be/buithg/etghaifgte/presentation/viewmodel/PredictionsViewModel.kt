@@ -8,7 +8,6 @@ import be.buithg.etghaifgte.data.local.entity.PredictionEntity
 import be.buithg.etghaifgte.domain.usecase.AddPredictionUseCase
 import be.buithg.etghaifgte.domain.usecase.GetPredictionsUseCase
 import be.buithg.etghaifgte.domain.usecase.GetCurrentMatchesUseCase
-import be.buithg.etghaifgte.domain.models.Data
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDate
 import java.time.LocalDateTime
