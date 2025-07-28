@@ -15,6 +15,7 @@ import androidx.core.view.isVisible
 import be.buithg.etghaifgte.data.local.entity.PredictionEntity
 import be.buithg.etghaifgte.presentation.ui.adapters.HistoryAdapter
 import be.buithg.etghaifgte.presentation.viewmodel.PredictionsViewModel
+import be.buithg.etghaifgte.domain.model.Match
 import com.google.android.material.button.MaterialButton
 import java.time.LocalDateTime
 import dagger.hilt.android.AndroidEntryPoint
@@ -108,7 +109,7 @@ class PredictionHistoryFragment : Fragment() {
             Filter.LOST -> allPredictions.filter { getResult(it) == "Lose" }
         }
         binding.predictionsHistoryRecyclerview.adapter = HistoryAdapter(list) { prediction ->
-            val match = prediction.toData()
+            val match = prediction.toMatch()
             val action = PredictionHistoryFragmentDirections.actionPredictionHistoryFragmentToMatchDetailFragment(
                 match,
                 true
@@ -117,7 +118,7 @@ class PredictionHistoryFragment : Fragment() {
         }
     }
 
-    private fun PredictionEntity.toData(): Data {
+    private fun PredictionEntity.toMatch(): Match {
         val upcomingFlag = isUpcoming(this)
         val status = if (upcomingFlag) {
             "Upcoming"
@@ -129,25 +130,20 @@ class PredictionHistoryFragment : Fragment() {
             }
         }
 
-        return Data(
-            bbbEnabled = false,
+        return Match(
             date = dateTime.substringBefore("T"),
             dateTimeGMT = dateTime,
-            fantasyEnabled = false,
-            hasSquad = false,
-            id = "",
-            matchEnded = !upcomingFlag,
-            matchStarted = !upcomingFlag,
-            matchType = matchType,
-
-            name = "$teamA - $teamB",
-            score = emptyList(),
-            series_id = "",
             status = status,
-            teamInfo = listOf(TeamInfo(shortname = teamA, name = teamA), TeamInfo(shortname = teamB, name = teamB)),
-            teams = listOf(teamA, teamB),
-            venue = listOfNotNull(stadium.takeIf { it.isNotBlank() }, city.takeIf { it.isNotBlank() }).joinToString(", ")
-
+            matchType = matchType,
+            league = null,
+            venue = stadium,
+            city = city,
+            country = null,
+            teamA = teamA,
+            teamB = teamB,
+            scoreA = null,
+            scoreB = null,
+            matchEnded = !upcomingFlag
         )
     }
 

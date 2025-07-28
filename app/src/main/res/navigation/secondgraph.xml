@@ -70,7 +70,7 @@
         tools:layout="@layout/fragment_match_detail" >
         <argument
             android:name="match"
-            app:argType="be.buithg.etghaifgte.domain.models.Data" />
+            app:argType="be.buithg.etghaifgte.domain.model.Match" />
         <argument
             android:name="fromHistory"
             app:argType="boolean"
