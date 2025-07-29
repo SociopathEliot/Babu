@@ -9,7 +9,7 @@ import be.buithg.etghaifgte.data.local.entity.NoteEntity
 
 @Database(
     entities = [PredictionEntity::class, NoteEntity::class],
-    version = 6,
+    version = 7,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
