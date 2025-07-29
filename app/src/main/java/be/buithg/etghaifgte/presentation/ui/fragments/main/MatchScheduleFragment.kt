@@ -62,17 +62,15 @@ class MatchScheduleFragment : Fragment() {
             LocalDate.now().plusDays(1)  -> binding.btnTomorrow
             else                         -> binding.btnToday
         }
-        predictionsViewModel.setFilterDate(current)
+        predictionsViewModel.selectDate(current)
 
         // 2) Подписываемся на метрики прогнозов
-        predictionsViewModel.predictedCount.observe(viewLifecycleOwner) {
-            binding.tvPredictedCount.text = it.toString().padStart(2, '0')
-        }
-        predictionsViewModel.upcomingCount.observe(viewLifecycleOwner) {
-            binding.tvUpcomingCount.text = it.toString().padStart(2, '0')
-        }
-        predictionsViewModel.wonCount.observe(viewLifecycleOwner) {
-            binding.tvWonCount.text = it.toString().padStart(2, '0')
+        lifecycleScope.launchWhenStarted {
+            predictionsViewModel.dailyStats.collect { stats ->
+                binding.tvPredictedCount.text = stats.predicted.toString().padStart(2, '0')
+                binding.tvUpcomingCount.text = stats.upcoming.toString().padStart(2, '0')
+                binding.tvWonCount.text = stats.won.toString().padStart(2, '0')
+            }
         }
 
         // 3) Автозагрузка матчей при сети
@@ -119,7 +117,7 @@ class MatchScheduleFragment : Fragment() {
                     R.id.btnTomorrow  -> LocalDate.now().plusDays(1)
                     else              -> LocalDate.now()
                 }
-                predictionsViewModel.setFilterDate(date)
+                predictionsViewModel.selectDate(date)
                 filterAndDisplay(btn.id)
             }
         }
