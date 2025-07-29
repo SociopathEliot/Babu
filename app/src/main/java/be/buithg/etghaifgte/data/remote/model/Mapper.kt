@@ -8,6 +8,9 @@ fun EspnEvent.toMatch(league: String): Match? {
     val teamA = competition.competitors?.find { it.homeAway == "home" }
     val teamB = competition.competitors?.find { it.homeAway == "away" }
 
+    val country = competition.venue?.address?.country
+        ?: competition.venue?.address?.state?.let { "USA" }
+
     return Match(
         date         = competition.date?.substring(0,10),
         dateTimeGMT  = competition.date,
@@ -16,7 +19,7 @@ fun EspnEvent.toMatch(league: String): Match? {
         league       = league,
         venue        = competition.venue?.fullName,
         city         = competition.venue?.address?.city,
-        country      = competition.venue?.address?.country,
+        country      = country,
         teamA        = teamA?.team?.shortDisplayName,
         teamB        = teamB?.team?.shortDisplayName,
         scoreA       = teamA?.score?.toIntOrNull(),
@@ -46,7 +49,8 @@ data class Venue(
 
 data class VenueAddress(
     val city: String?,
-    val country: String?
+    val country: String?,
+    val state: String?
 )
 
 data class Competitor(
