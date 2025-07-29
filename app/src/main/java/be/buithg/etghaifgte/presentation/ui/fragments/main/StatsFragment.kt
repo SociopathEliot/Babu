@@ -18,6 +18,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Month
+import be.buithg.etghaifgte.utils.parseUtcToLocal
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.LegendEntry
@@ -54,7 +55,7 @@ class StatsFragment : Fragment(R.layout.fragment_stats) {
 
         fun monthAcc(y: Int, m: Int): Int {
             val monthList = list.filter {
-                runCatching { LocalDateTime.parse(it.dateTime) }.getOrNull()?.let { dt ->
+                it.dateTime.parseUtcToLocal()?.let { dt ->
                     dt.year == y && dt.monthValue == m
                 } ?: false
             }
@@ -147,7 +148,7 @@ class StatsFragment : Fragment(R.layout.fragment_stats) {
             axisRight.isEnabled = false
         }
 
-        val parsed = data.mapNotNull { runCatching { LocalDateTime.parse(it.dateTime) }.getOrNull() }
+        val parsed = data.mapNotNull { it.dateTime.parseUtcToLocal() }
         val monthsSet = parsed.map { it.monthValue }.distinct().sorted()
         val months = monthsSet.map { Month.of(it).name.take(3) }
         chart.xAxis.apply {
@@ -196,7 +197,7 @@ class StatsFragment : Fragment(R.layout.fragment_stats) {
 
         fun monthAcc(year: Int, month: Int): Float {
             val monthData = data.filter {
-                runCatching { LocalDateTime.parse(it.dateTime) }.getOrNull()?.let { dt ->
+                it.dateTime.parseUtcToLocal()?.let { dt ->
                     dt.year == year && dt.monthValue == month
                 } ?: false
             }

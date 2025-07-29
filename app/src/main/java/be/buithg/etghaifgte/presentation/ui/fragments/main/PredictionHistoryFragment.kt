@@ -18,6 +18,7 @@ import be.buithg.etghaifgte.presentation.viewmodel.PredictionsViewModel
 import be.buithg.etghaifgte.domain.model.Match
 import com.google.android.material.button.MaterialButton
 import java.time.LocalDateTime
+import be.buithg.etghaifgte.utils.parseUtcToLocal
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -90,7 +91,7 @@ class PredictionHistoryFragment : Fragment() {
 
     private fun isUpcoming(item: PredictionEntity): Boolean {
         if (item.upcoming == 1) return true
-        val dt = runCatching { LocalDateTime.parse(item.dateTime) }.getOrNull()
+        val dt = item.dateTime.parseUtcToLocal()
         return dt?.isAfter(LocalDateTime.now()) ?: false
     }
 
