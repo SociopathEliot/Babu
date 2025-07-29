@@ -2,7 +2,11 @@ package be.buithg.etghaifgte.data.local.repository
 
 import be.buithg.etghaifgte.data.local.dao.PredictionDao
 import be.buithg.etghaifgte.data.local.entity.PredictionEntity
+import be.buithg.etghaifgte.domain.model.DailyStats
 import be.buithg.etghaifgte.domain.repository.PredictionRepository
+import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
+import java.time.ZoneOffset
 import javax.inject.Inject
 
 class PredictionRepositoryImpl @Inject constructor(
@@ -18,5 +22,15 @@ class PredictionRepositoryImpl @Inject constructor(
 
     override suspend fun getPrediction(teamA: String, teamB: String, dateTime: String): PredictionEntity? {
         return dao.getByMatch(teamA, teamB, dateTime)
+    }
+
+    override fun getDailyStats(date: LocalDate): Flow<DailyStats> {
+        val today = LocalDate.now()
+        val index = when (date) {
+            today.minusDays(1) -> -1
+            today.plusDays(1)  -> 1
+            else               -> 0
+        }
+        return dao.getDailyStats(index)
     }
 }
