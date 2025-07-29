@@ -149,15 +149,17 @@ class MatchDetailFragment : Fragment() {
 
                 val venueParts = match.venue?.split(",")?.map { it.trim() } ?: emptyList()
                 val stadium = venueParts.getOrNull(0) ?: match.venue.orEmpty()
-                val city = venueParts.getOrNull(1) ?: ""
+                val city = venueParts.getOrNull(1) ?: match.city.orEmpty()
+                val country = match.country ?: ""
 
                 val entity = PredictionEntity(
                     teamA = team1.toString(),
                     teamB = team2.toString(),
                     dateTime = match.dateTimeGMT ?: "",
-                    matchType = match.matchType ?: "",
+                    matchType = match.league ?: "",
                     stadium = stadium,
                     city = city,
+                    country = country,
                     pick = pick,
                     predicted = 1,
                     corrects = 0,
@@ -232,6 +234,6 @@ class MatchDetailFragment : Fragment() {
         val country = match.country ?: "-"
         binding.tvCountryValue.text = country
 
-        binding.tvMatchTypeValue.text = match.matchType?.uppercase() ?: "-"
+        binding.tvLeagueValue.text = match.league?.uppercase() ?: "-"
     }
 }
