@@ -2,6 +2,7 @@ package be.buithg.etghaifgte.presentation.ui.adapters
 
 import android.graphics.Color
 import android.content.res.ColorStateList
+import android.util.Log
 import be.buithg.etghaifgte.databinding.MatchItemBinding
 
 
@@ -42,12 +43,16 @@ class MatchAdapter(
         }
     }
 
-    override fun getItemCount(): Int = if (items.isEmpty()) 1 else items.size
-
+    override fun getItemCount(): Int {
+        val cnt = if (items.isEmpty()) 1 else items.size
+        Log.d("MatchAdapter", "getItemCount = $cnt")
+        return cnt
+    }
     override fun getItemViewType(position: Int): Int = if (items.isEmpty()) TYPE_EMPTY else TYPE_MATCH
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is MatchViewHolder) {
+            Log.d("MatchAdapter", "  binding item: ${items[position]}")
             val item = items[position]
             holder.bind(item, position)
             holder.itemView.setOnClickListener { onItemClick(item) }

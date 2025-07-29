@@ -30,6 +30,7 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @AndroidEntryPoint
 class MatchScheduleFragment : Fragment() {
@@ -155,28 +156,49 @@ class MatchScheduleFragment : Fragment() {
     }
 
     private fun filterAndDisplay(button: MaterialButton) {
-        val selectedDate = when (button.id) {
-            R.id.btnYesterday -> LocalDate.now().minusDays(1)
-            R.id.btnTomorrow -> LocalDate.now().plusDays(1)
-            else -> LocalDate.now()
+        val now = LocalDateTime.now()
+
+        // Отбираем матчи на основе даты события, а не на основе calendar
+        val filtered = when (button.id) {
+            R.id.btnYesterday -> {
+                // Любые уже завершённые матчи
+                allMatches.filter {
+                    runCatching { LocalDateTime.parse(it.dateTimeGMT) }
+                        .getOrNull()?.isBefore(now) == true
+                }
+            }
+            R.id.btnTomorrow -> {
+                // Любые ещё НЕ завершённые (будущие) матчи
+                allMatches.filter {
+                    runCatching { LocalDateTime.parse(it.dateTimeGMT) }
+                        .getOrNull()?.isAfter(now) == true
+                }
+            }
+            else /* Today */ -> {
+                // Оставляем только те, чей день совпадает с today
+                allMatches.filter {
+                    runCatching { LocalDate.parse(it.date) }
+                        .getOrNull() == LocalDate.now()
+                }
+            }
         }
-        predictionsViewModel.setFilterDate(selectedDate)
-        val filtered = allMatches.filter {
-            runCatching { LocalDate.parse(it.date) }.getOrNull() == selectedDate
-        }.take(10)
-        adapter = MatchAdapter(ArrayList(filtered)) { match ->
-            val action =
-                MatchScheduleFragmentDirections.actionMatchScheduleFragmentToMatchDetailFragment(
-                    match,
-                    false
-                )
+        // Показать первые 10 (или сколько нужно)
+        val toShow = filtered.take(10)
+
+        // Обновляем адаптер
+        adapter = MatchAdapter(ArrayList(toShow)) { match ->
+            val action = MatchScheduleFragmentDirections
+                .actionMatchScheduleFragmentToMatchDetailFragment(match, false)
             findNavController().navigate(action)
         }
         binding.recyclerMatcher.adapter = adapter
-        binding.emptyText.isVisible = filtered.isEmpty()
-        binding.btnRetry.isVisible = filtered.isEmpty()
-        binding.recyclerMatcher.isVisible = filtered.isNotEmpty()
+
+        // Состояние пустого списка
+        binding.emptyText.isVisible = toShow.isEmpty()
+        binding.btnRetry.isVisible = toShow.isEmpty()
+        binding.recyclerMatcher.isVisible = toShow.isNotEmpty()
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

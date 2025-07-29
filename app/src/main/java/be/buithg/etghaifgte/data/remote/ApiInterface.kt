@@ -5,11 +5,13 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 import be.buithg.etghaifgte.data.remote.model.ScoreboardResponse
 
+
 interface ApiInterface {
-    @GET("apis/site/v2/sports/soccer/{league}/scoreboard")
+    @GET("apis/site/v2/sports/{sport}/{league}/scoreboard")
     suspend fun getScoreboard(
+        @Path("sport") sport: String,
         @Path("league") league: String,
-        @Query("dates") date: String,
+        @Query("dates") dates: String? = null,
         @Query("limit") limit: Int = 100
     ): ScoreboardResponse
 }

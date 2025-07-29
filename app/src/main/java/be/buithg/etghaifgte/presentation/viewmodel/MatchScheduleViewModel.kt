@@ -1,5 +1,6 @@
 package be.buithg.etghaifgte.presentation.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -21,9 +22,16 @@ class MatchScheduleViewModel @Inject constructor(
     fun loadMatches() {
         viewModelScope.launch {
             runCatching { getCurrentMatchesUseCase() }
-                .onSuccess { _matches.value = it }
-                .onFailure { _matches.value = emptyList() }
+                .onSuccess {
+                    Log.d("MSF", "Successfully loaded matches: ${it.size}")
+                    _matches.value = it
+                }
+                .onFailure { t ->
+                    Log.e("MSkjhF", "Error loading matches", t)
+                    _matches.value = emptyList()
+                }
         }
+
     }
 }
 
