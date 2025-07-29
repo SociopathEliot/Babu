@@ -97,7 +97,7 @@ class MatchScheduleFragment : Fragment() {
         }
 
         predictionsViewModel.predictedCount.observe(viewLifecycleOwner) {
-            binding.tvPredictedCount.text = it.toString()
+            binding.tvPredictedCount.text = it.toString().padStart(2, '0')
         }
         predictionsViewModel.wonCount.observe(viewLifecycleOwner) {
             binding.tvWonCount.text = it.toString().padStart(2, '0')
