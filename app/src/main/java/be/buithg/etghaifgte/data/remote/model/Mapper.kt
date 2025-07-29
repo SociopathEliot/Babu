@@ -3,11 +3,54 @@ package be.buithg.etghaifgte.data.remote.model
 
 import be.buithg.etghaifgte.domain.model.Match
 
+fun EspnEvent.toMatch(league: String): Match? {
+    val competition = competitions?.firstOrNull() ?: return null
+    val teamA = competition.competitors?.find { it.homeAway == "home" }
+    val teamB = competition.competitors?.find { it.homeAway == "away" }
+
+    val country = competition.venue?.address?.country
+        ?: competition.venue?.address?.state?.let { "USA" }
+        ?: when (league) {
+            "nfl", "nba", "mlb", "nhl" -> "USA"
+            "eng.1" -> "England"
+            "fra.1" -> "France"
+            else -> null
+        }
+
+    val matchType = competition.type?.text
+        ?: season?.slug?.let { slug ->
+            slug.split("-")
+                .filter { part -> part.any { it.isLetter() } }
+                .joinToString(" ") { part ->
+                    part.replaceFirstChar { ch ->
+                        if (ch.isLowerCase()) ch.titlecase() else ch.toString()
+                    }
+                }
+                .ifBlank { null }
+        }
+
+    return Match(
+        date         = competition.date?.substring(0,10),
+        dateTimeGMT  = competition.date,
+        status       = competition.status?.type?.description,
+        matchType    = matchType,
+        league       = league,
+        venue        = competition.venue?.fullName,
+        city         = competition.venue?.address?.city,
+        country      = country,
+        teamA        = teamA?.team?.shortDisplayName,
+        teamB        = teamB?.team?.shortDisplayName,
+        scoreA       = teamA?.score?.toIntOrNull(),
+        scoreB       = teamB?.score?.toIntOrNull(),
+        matchEnded   = competition.status?.type?.state == "post"
+    )
+}
 
 data class EspnEvent(
     val competitions: List<Competition>?,
-    // в JSON у вас есть и это поле, берем его на всякий случай как fallback
-    val venue: EventVenue?
+    val status: StatusWrapper?,
+    val season: Season?
+
 )
 
 data class Competition(
@@ -27,10 +70,6 @@ data class VenueAddress(
     val city: String?,
     val country: String?,
     val state: String?
-)
-
-data class EventVenue(
-    val displayName: String?
 )
 
 data class Competitor(
@@ -56,34 +95,8 @@ data class CompetitionType(
     val text: String?
 )
 
-// Расширение для конвертации в ваш Match
-fun EspnEvent.toMatch(league: String): Match? {
-    val competition = competitions?.firstOrNull() ?: return null
-    val teamA = competition.competitors?.find { it.homeAway == "home" }
-    val teamB = competition.competitors?.find { it.homeAway == "away" }
-
-    val country = competition.venue?.address?.country
-        ?: competition.venue?.address?.state?.let { "USA" }
-        ?: when (league) {
-            "nfl", "nba", "mlb", "nhl" -> "USA"
-            "eng.1" -> "England"
-            "fra.1" -> "France"
-            else -> null
-        }
-
-    return Match(
-        date         = competition.date?.substring(0,10),
-        dateTimeGMT  = competition.date,
-        status       = competition.status?.type?.description,
-        matchType    = competition.type?.text,
-        league       = league,
-        venue        = competition.venue?.fullName,
-        city         = competition.venue?.address?.city,
-        country      = country,
-        teamA        = teamA?.team?.shortDisplayName,
-        teamB        = teamB?.team?.shortDisplayName,
-        scoreA       = teamA?.score?.toIntOrNull(),
-        scoreB       = teamB?.score?.toIntOrNull(),
-        matchEnded   = competition.status?.type?.state == "post"
-    )
-}
+data class Season(
+    val year: Int?,
+    val type: Int?,
+    val slug: String?,
+)
