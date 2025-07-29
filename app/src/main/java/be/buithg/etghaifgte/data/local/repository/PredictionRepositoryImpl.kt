@@ -35,5 +35,6 @@ class PredictionRepositoryImpl @Inject constructor(
             .toInstant(ZoneOffset.UTC)
             .toEpochMilli() - 1
         return dao.getDailyStats(start, end)
+
     }
 }

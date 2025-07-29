@@ -152,6 +152,7 @@ class MatchDetailFragment : Fragment() {
                 2 -> pick == match.teamB
                 else -> false
             }
+
             val entity = PredictionEntity(
                 teamA      = match.teamA.orEmpty(),
                 teamB      = match.teamB.orEmpty(),
