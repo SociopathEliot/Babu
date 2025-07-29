@@ -9,5 +9,6 @@ fun String?.parseUtcToLocal(): LocalDateTime? {
     return runCatching { OffsetDateTime.parse(this) }
         .getOrNull()
         ?.atZoneSameInstant(ZoneId.systemDefault())
+
         ?.toLocalDateTime()
 }
