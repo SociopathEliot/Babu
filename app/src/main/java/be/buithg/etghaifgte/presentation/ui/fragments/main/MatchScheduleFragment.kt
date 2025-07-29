@@ -30,7 +30,6 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 @AndroidEntryPoint
 class MatchScheduleFragment : Fragment() {
@@ -100,9 +99,6 @@ class MatchScheduleFragment : Fragment() {
         predictionsViewModel.predictedCount.observe(viewLifecycleOwner) {
             binding.tvPredictedCount.text = it.toString()
         }
-        predictionsViewModel.upcomingCount.observe(viewLifecycleOwner) {
-            binding.tvUpcomingCount.text = it.toString().padStart(2, '0')
-        }
         predictionsViewModel.wonCount.observe(viewLifecycleOwner) {
             binding.tvWonCount.text = it.toString().padStart(2, '0')
         }
@@ -168,6 +164,8 @@ class MatchScheduleFragment : Fragment() {
             }
         }
         val toShow = filtered.take(10)
+        binding.tvUpcomingCount.text =
+            toShow.count { !it.matchEnded }.toString().padStart(2, '0')
         binding.recyclerMatcher.adapter = MatchAdapter(ArrayList(toShow)) { match ->
             // Важный кусок — обязательно здесь навигация
             val action = MatchScheduleFragmentDirections
