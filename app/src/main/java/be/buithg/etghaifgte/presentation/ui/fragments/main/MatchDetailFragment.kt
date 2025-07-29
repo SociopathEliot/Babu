@@ -152,11 +152,22 @@ class MatchDetailFragment : Fragment() {
                 2 -> pick == match.teamB
                 else -> false
             }
+            val date = runCatching { java.time.LocalDate.parse(match.date.orEmpty()) }.getOrNull()
+            val today = java.time.LocalDate.now()
+            val dayIndex = when (date) {
+                today.minusDays(1) -> -1
+                today.plusDays(1)  -> 1
+                else               -> 0
+            }
+
+
             val entity = PredictionEntity(
                 teamA      = match.teamA.orEmpty(),
                 teamB      = match.teamB.orEmpty(),
                 dateTime   = match.dateTimeGMT.orEmpty(),
                 matchTime  = matchTime,
+                dayIndex   = dayIndex,
+
                 matchType  = match.league.orEmpty(),
                 stadium    = stadium,
                 city       = city,

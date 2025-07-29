@@ -22,10 +22,11 @@ interface PredictionDao {
     @Query(
         """
         SELECT
-          (SELECT COUNT(*) FROM predictions WHERE matchTime BETWEEN :start AND :end) AS predicted,
-          (SELECT COUNT(*) FROM predictions WHERE matchTime BETWEEN :start AND :end AND upcomingFlag = 1) AS upcoming,
-          (SELECT COUNT(*) FROM predictions WHERE matchTime BETWEEN :start AND :end AND won = 1) AS won
+          (SELECT COUNT(*) FROM predictions WHERE dayIndex = :index) AS predicted,
+          (SELECT COUNT(*) FROM predictions WHERE dayIndex = :index AND upcomingFlag = 1) AS upcoming,
+          (SELECT COUNT(*) FROM predictions WHERE dayIndex = :index AND won = 1) AS won
         """
     )
-    fun getDailyStats(start: Long, end: Long): Flow<DailyStats>
+    fun getDailyStats(index: Int): Flow<DailyStats>
+
 }

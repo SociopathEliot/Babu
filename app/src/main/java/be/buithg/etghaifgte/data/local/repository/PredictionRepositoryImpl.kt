@@ -25,8 +25,13 @@ class PredictionRepositoryImpl @Inject constructor(
     }
 
     override fun getDailyStats(date: LocalDate): Flow<DailyStats> {
-        val start = date.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
-        val end = date.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli() - 1
-        return dao.getDailyStats(start, end)
+        val today = LocalDate.now()
+        val index = when (date) {
+            today.minusDays(1) -> -1
+            today.plusDays(1)  -> 1
+            else               -> 0
+        }
+        return dao.getDailyStats(index)
+
     }
 }
