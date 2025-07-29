@@ -18,6 +18,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.combine
 import java.time.LocalDate
 
 import be.buithg.etghaifgte.R
@@ -66,8 +67,25 @@ class MatchScheduleFragment : Fragment() {
 
         // 2) Подписываемся на метрики прогнозов
         lifecycleScope.launchWhenStarted {
+            combine(
+                predictionsViewModel.selectedDate,
+                predictionsViewModel.predYesterday,
+                predictionsViewModel.predToday,
+                predictionsViewModel.predTomorrow
+            ) { sel, y, t, tom ->
+                when (sel) {
+                    LocalDate.now().minusDays(1) -> y
+                    LocalDate.now()             -> t
+                    LocalDate.now().plusDays(1) -> tom
+                    else -> 0
+                }
+            }.collect { count ->
+                binding.tvPredictedCount.text = count.toString().padStart(2, '0')
+            }
+        }
+
+        lifecycleScope.launchWhenStarted {
             predictionsViewModel.dailyStats.collect { stats ->
-                binding.tvPredictedCount.text = stats.predicted.toString().padStart(2, '0')
                 binding.tvUpcomingCount.text = stats.upcoming.toString().padStart(2, '0')
                 binding.tvWonCount.text = stats.won.toString().padStart(2, '0')
             }

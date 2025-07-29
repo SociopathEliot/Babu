@@ -36,6 +36,10 @@ class PredictionsViewModel @Inject constructor(
     private val _selectedDate = MutableStateFlow(LocalDate.now())
     val selectedDate: StateFlow<LocalDate> = _selectedDate
 
+    val predYesterday = MutableStateFlow(0)
+    val predToday     = MutableStateFlow(0)
+    val predTomorrow  = MutableStateFlow(0)
+
     val dailyStats: StateFlow<DailyStats> = _selectedDate
         .flatMapLatest { getDailyStatsUseCase(it) }
         .stateIn(viewModelScope, SharingStarted.Eagerly, DailyStats(0, 0, 0))
@@ -53,6 +57,11 @@ class PredictionsViewModel @Inject constructor(
     fun addPrediction(entity: PredictionEntity) = viewModelScope.launch {
         addPredictionUseCase(entity)
         _predictions.value = listOf(entity) + (_predictions.value.orEmpty())
+        when (_selectedDate.value) {
+            LocalDate.now().minusDays(1) -> predYesterday.value++
+            LocalDate.now()             -> predToday.value++
+            LocalDate.now().plusDays(1) -> predTomorrow.value++
+        }
     }
 
     fun selectDate(date: LocalDate) {
