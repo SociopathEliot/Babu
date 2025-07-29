@@ -7,6 +7,7 @@ import be.buithg.etghaifgte.data.local.entity.PredictionEntity
 import be.buithg.etghaifgte.databinding.ItemHistoryPredictionBinding
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import be.buithg.etghaifgte.utils.parseUtcToLocal
 
 class HistoryAdapter(
     private val items: List<PredictionEntity>,
@@ -24,7 +25,7 @@ class HistoryAdapter(
     inner class HistoryViewHolder(private val binding: ItemHistoryPredictionBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: PredictionEntity) {
-            val dt = runCatching { LocalDateTime.parse(item.dateTime) }.getOrNull()
+            val dt = item.dateTime.parseUtcToLocal()
 
             binding.textTime.text = dt?.format(timeFormatter) ?: item.dateTime
             binding.textDate.text = dt?.format(dateFormatter) ?: item.dateTime

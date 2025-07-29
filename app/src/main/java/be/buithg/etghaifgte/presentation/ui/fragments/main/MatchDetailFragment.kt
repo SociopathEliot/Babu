@@ -24,8 +24,8 @@ import be.buithg.etghaifgte.presentation.viewmodel.NoteViewModel
 import be.buithg.etghaifgte.domain.model.Match
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import be.buithg.etghaifgte.utils.parseUtcToLocal
 
 @AndroidEntryPoint
 class MatchDetailFragment : Fragment() {
@@ -212,7 +212,7 @@ class MatchDetailFragment : Fragment() {
         val formatterTime = DateTimeFormatter.ofPattern("HH:mm")
 
         val date = runCatching { LocalDate.parse(match.date ?: "") }.getOrNull()
-        val time = runCatching { LocalDateTime.parse(match.dateTimeGMT ?: "") }.getOrNull()
+        val time = match.dateTimeGMT.parseUtcToLocal()
 
         binding.tvDateValue.text = date?.format(formatterDate) ?: (match.date.orDash())
         binding.tvTimeValue.text = time?.format(formatterTime) ?: (match.dateTimeGMT.orDash())

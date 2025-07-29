@@ -12,6 +12,7 @@ import be.buithg.etghaifgte.domain.usecase.GetCurrentMatchesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDate
 import java.time.LocalDateTime
+import be.buithg.etghaifgte.utils.parseUtcToLocal
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 
@@ -67,7 +68,7 @@ class PredictionsViewModel @Inject constructor(
 
     private fun isUpcoming(item: PredictionEntity): Boolean {
         if (item.upcoming == 1) return true
-        val dt = runCatching { LocalDateTime.parse(item.dateTime) }.getOrNull()
+        val dt = item.dateTime.parseUtcToLocal()
         return dt?.isAfter(LocalDateTime.now()) ?: false
     }
 
@@ -96,7 +97,7 @@ class PredictionsViewModel @Inject constructor(
         val list = _predictions.value ?: emptyList()
         val filtered = filterDate?.let { date ->
             list.filter {
-                runCatching { LocalDateTime.parse(it.dateTime).toLocalDate() }.getOrNull() == date
+                it.dateTime.parseUtcToLocal()?.toLocalDate() == date
             }
         } ?: list
 
