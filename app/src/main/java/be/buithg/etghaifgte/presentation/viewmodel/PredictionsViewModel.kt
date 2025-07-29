@@ -6,15 +6,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import be.buithg.etghaifgte.data.local.entity.PredictionEntity
 import be.buithg.etghaifgte.domain.usecase.AddPredictionUseCase
-import be.buithg.etghaifgte.domain.usecase.GetPredictionsUseCase
-import be.buithg.etghaifgte.domain.model.Match
 import be.buithg.etghaifgte.domain.usecase.GetCurrentMatchesUseCase
+import be.buithg.etghaifgte.domain.usecase.GetPredictionsUseCase
+import be.buithg.etghaifgte.utils.parseUtcToLocal
 import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
-import be.buithg.etghaifgte.utils.parseUtcToLocal
-import javax.inject.Inject
-import kotlinx.coroutines.launch
 
 @HiltViewModel
 class PredictionsViewModel @Inject constructor(
@@ -23,132 +22,85 @@ class PredictionsViewModel @Inject constructor(
     private val getCurrentMatchesUseCase: GetCurrentMatchesUseCase
 ) : ViewModel() {
 
-    private val _predictions = MutableLiveData<List<PredictionEntity>>()
+    private val _predictions    = MutableLiveData<List<PredictionEntity>>(emptyList())
     val predictions: LiveData<List<PredictionEntity>> = _predictions
 
-    private val _predictedCount = MutableLiveData<Int>()
+    private val _predictedCount = MutableLiveData(0)
     val predictedCount: LiveData<Int> = _predictedCount
 
-    private val _upcomingCount = MutableLiveData<Int>()
+    private val _upcomingCount  = MutableLiveData(0)
     val upcomingCount: LiveData<Int> = _upcomingCount
 
-    private val _wonCount = MutableLiveData<Int>()
+    private val _wonCount       = MutableLiveData(0)
     val wonCount: LiveData<Int> = _wonCount
 
-    private var filterDate: LocalDate? = null
-
+    private var filterDate: LocalDate = LocalDate.now()
     private val predictedCounts = mutableMapOf<LocalDate, Int>()
 
-    private fun winnerTeam(match: Match): Int {
-        // 1 — teamA, 2 — teamB, 0 — ничья или неизвестно
-
-        val a = match.scoreA
-        val b = match.scoreB
-
-        // если оба счёта известны, пользуемся ими
-        if (a != null && b != null) {
-            return when {
-                a > b  -> 1
-                b > a  -> 2
-                else   -> 0  // равный счёт — ничья
-            }
-        }
-
-        // если матч уже закончился, но вдруг нет числовых полей,
-        // можно попытаться вытащить из текстового статуса
-        val lowerStatus = match.status?.lowercase() ?: ""
-        val teamALower = match.teamA?.lowercase() ?: ""
-        val teamBLower = match.teamB?.lowercase() ?: ""
-
-        return when {
-            lowerStatus.contains("draw") || lowerStatus.contains("ничья") -> 0
-            lowerStatus.contains(teamALower) -> 1
-            lowerStatus.contains(teamBLower) -> 2
-            else                             -> 0
-        }
+    init {
+        loadPredictions()
     }
 
-    private fun isUpcoming(item: PredictionEntity): Boolean {
-        if (item.upcoming == 1) return true
-        val dt = item.dateTime.parseUtcToLocal()
-        return dt?.isAfter(LocalDateTime.now()) ?: false
+    fun loadPredictions() = viewModelScope.launch {
+        val raw = getPredictionsUseCase()
+        refreshUpcomingMatches(raw)
+        val updated = getPredictionsUseCase()
+        computePredictedCounts(updated)
+        _predictions.value = updated
+        updateCountsForDate()
     }
 
-    fun loadPredictions() {
-        viewModelScope.launch {
-            val list = getPredictionsUseCase()
-            refreshUpcomingMatches(list)
-            val updated = getPredictionsUseCase()
-            computePredictedCounts(updated)
-            _predictions.value = updated
-            val date = filterDate ?: LocalDate.now()
-            updateCountsForDate(date)
-        }
-    }
-
-    fun addPrediction(entity: PredictionEntity) {
-        viewModelScope.launch {
-            addPredictionUseCase(entity)
-            val list = _predictions.value?.toMutableList() ?: mutableListOf()
-            list.add(0, entity)
-            _predictions.value = list
-
-            runCatching { LocalDate.parse(entity.dateTime.substring(0, 10)) }.getOrNull()?.let { date ->
-                predictedCounts[date] = (predictedCounts[date] ?: 0) + 1
-            }
-
-            updateCountsForDate(filterDate ?: LocalDate.now())
-        }
+    fun addPrediction(entity: PredictionEntity) = viewModelScope.launch {
+        addPredictionUseCase(entity)
+        _predictions.value = listOf(entity) + (_predictions.value.orEmpty())
+        entity.dateTime.parseUtcToLocal()
+            ?.toLocalDate()
+            ?.let { d -> predictedCounts[d] = (predictedCounts[d] ?: 0) + 1 }
+        updateCountsForDate()
     }
 
     fun setFilterDate(date: LocalDate) {
         filterDate = date
-        updateCountsForDate(date)
+        updateCountsForDate()
     }
 
     private fun computePredictedCounts(list: List<PredictionEntity>) {
         predictedCounts.clear()
-        list.forEach { item ->
-            runCatching { LocalDate.parse(item.dateTime.substring(0, 10)) }
-                .getOrNull()
-                ?.let { date ->
-                    predictedCounts[date] = (predictedCounts[date] ?: 0) + 1
-                }
+        list.forEach { e ->
+            e.dateTime.parseUtcToLocal()
+                ?.toLocalDate()
+                ?.let { d -> predictedCounts[d] = (predictedCounts[d] ?: 0) + 1 }
         }
     }
 
-    private fun updateCountsForDate(date: LocalDate) {
-        val list = _predictions.value ?: emptyList()
-        val filtered = list.filter {
-            val dt = runCatching { it.dateTime.substring(0, 10) }.getOrNull()
-            val parsed = runCatching { LocalDate.parse(dt) }.getOrNull()
-            parsed == date
+    private fun updateCountsForDate() {
+        _predictedCount.value = predictedCounts[filterDate] ?: 0
+        val listForDate = _predictions.value.orEmpty().filter {
+            it.dateTime.parseUtcToLocal()?.toLocalDate() == filterDate
         }
+        _upcomingCount.value = listForDate.count { isUpcoming(it) }
+        _wonCount.value      = listForDate.count { it.upcoming == 0 && it.wonMatches > 0 }
+    }
 
-        _predictedCount.value = predictedCounts[date] ?: filtered.size
-        _upcomingCount.value = filtered.count { isUpcoming(it) }
-        _wonCount.value = filtered.count { prediction ->
-            if (isUpcoming(prediction)) return@count false
-            when (prediction.wonMatches) {
-                1 -> prediction.pick == prediction.teamA
-                2 -> prediction.pick == prediction.teamB
-                else -> false
-            }
-        }
+    private fun isUpcoming(item: PredictionEntity): Boolean {
+        if (item.upcoming == 1) return true
+        return item.dateTime.parseUtcToLocal()?.isAfter(LocalDateTime.now()) ?: false
     }
 
     private suspend fun refreshUpcomingMatches(list: List<PredictionEntity>) {
-        val upcomingList = list.filter { isUpcoming(it) }
-        if (upcomingList.isEmpty()) return
-
+        val future = list.filter { isUpcoming(it) }
+        if (future.isEmpty()) return
         val matches = runCatching { getCurrentMatchesUseCase() }.getOrNull() ?: return
-
-        upcomingList.forEach { prediction ->
-            val match = matches.find { it.dateTimeGMT == prediction.dateTime }
-            if (match != null && match.matchEnded) {
-                val winner = winnerTeam(match)
-                val updated = prediction.copy(upcoming = 0, wonMatches = winner)
-                addPredictionUseCase(updated)
+        future.forEach { p ->
+            matches.find { it.dateTimeGMT == p.dateTime }?.let { m ->
+                if (m.matchEnded) {
+                    val win = when {
+                        m.scoreA != null && m.scoreB != null ->
+                            if (m.scoreA > m.scoreB) 1 else if (m.scoreB > m.scoreA) 2 else 0
+                        else -> 0
+                    }
+                    addPredictionUseCase(p.copy(upcoming = 0, wonMatches = win))
+                }
             }
         }
     }

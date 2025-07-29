@@ -4,237 +4,195 @@ import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
-import be.buithg.etghaifgte.R
-import be.buithg.etghaifgte.databinding.DialogPredictWinnerBinding
-import be.buithg.etghaifgte.databinding.FragmentMatchDetailBinding
-import androidx.navigation.fragment.navArgs
-import androidx.core.content.ContextCompat
-import androidx.fragment.app.activityViewModels
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.google.android.material.button.MaterialButton
-import be.buithg.etghaifgte.data.local.entity.PredictionEntity
-import be.buithg.etghaifgte.presentation.viewmodel.PredictionsViewModel
-import be.buithg.etghaifgte.presentation.viewmodel.NoteViewModel
-import be.buithg.etghaifgte.domain.model.Match
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+
+import be.buithg.etghaifgte.R
+import be.buithg.etghaifgte.data.local.entity.PredictionEntity
+import be.buithg.etghaifgte.databinding.DialogPredictWinnerBinding
+import be.buithg.etghaifgte.databinding.FragmentMatchDetailBinding
+import be.buithg.etghaifgte.domain.model.Match
+import be.buithg.etghaifgte.presentation.viewmodel.NoteViewModel
+import be.buithg.etghaifgte.presentation.viewmodel.PredictionsViewModel
 import be.buithg.etghaifgte.utils.parseUtcToLocal
 
 @AndroidEntryPoint
 class MatchDetailFragment : Fragment() {
 
-    private fun String?.orDash(): String = this?.takeIf { it.isNotBlank() } ?: "-"
+    private var _binding: FragmentMatchDetailBinding? = null
+    private val binding get() = _binding!!
 
-    private fun winnerTeam(match: Match): Int {
-        val scoreA = match.scoreA ?: return 0
-        val scoreB = match.scoreB ?: return 0
-        return when {
-            scoreA > scoreB -> 1
-            scoreB > scoreA -> 2
-            else -> 0
-        }
-    }
-    private val args: MatchDetailFragmentArgs by navArgs()
-
-    private lateinit var binding: FragmentMatchDetailBinding
+    private val args by navArgs<MatchDetailFragmentArgs>()
     private val predictionsViewModel: PredictionsViewModel by activityViewModels()
     private val noteViewModel: NoteViewModel by viewModels()
-    private var selectedTeam: String? = null
-    private lateinit var buttons: List<MaterialButton>
-    private var selectedBtn: MaterialButton? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        binding = FragmentMatchDetailBinding.inflate(inflater,container,false)
+    ): View {
+        _binding = FragmentMatchDetailBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                findNavController().navigateUp()
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    findNavController().navigateUp()
+                }
             }
-        })
+        )
 
         binding.btnHelp.setOnClickListener {
             findNavController().navigate(R.id.tutorialFragment)
         }
 
         val match = args.match
+        bindMatch(match)
         if (args.fromHistory || match.matchEnded) {
             binding.btnMakeForecast.visibility = View.GONE
         }
-        bindMatch(match)
-        val team1Key = match.teamA
-        val team2Key = match.teamB
-        val noteKey = "${team1Key}_${team2Key}_${match.dateTimeGMT ?: ""}"
+
+        val noteKey = "${match.teamA}_${match.teamB}_${match.dateTimeGMT}"
         noteViewModel.loadNote(noteKey)
         noteViewModel.noteText.observe(viewLifecycleOwner) { text ->
-            binding.tvNote.text = text?.takeIf { it.isNotBlank() }
+            binding.tvNote.text = text
+                ?.takeIf { it.isNotBlank() }
                 ?: getString(R.string.no_notes)
         }
 
-        val infoContainer = binding.infoContainer
-        val editNote = binding.editNote
-        val saveButton = binding.btnSaveNote
-
-        buttons = listOf(binding.btnToday, binding.btnTomorrow)
-        selectedBtn = binding.btnToday
-        updateSelection(binding.btnToday)
-
-        binding.btnToday.setOnClickListener {
-            selectedBtn = binding.btnToday
-            updateSelection(binding.btnToday)
-            infoContainer.visibility = View.VISIBLE
-            editNote.visibility = View.GONE
-            saveButton.visibility = View.GONE
-            binding.tvNote.visibility = View.VISIBLE
-        }
-
+        binding.btnToday.setOnClickListener { switchMode(true) }
+        binding.btnTomorrow.setOnClickListener { switchMode(false) }
+        switchMode(true)
 
         binding.btnMakeForecast.setOnClickListener {
-            val dialog = Dialog(requireContext())
-            val dialogBinding = DialogPredictWinnerBinding.inflate(layoutInflater)
-            dialog.setContentView(dialogBinding.root)
-
-            dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-
-            selectedTeam = null
-
-            val team1 = match.teamA
-            val team2 = match.teamB
-            dialogBinding.teamAText.text = team1
-            dialogBinding.teamBText.text = team2
-
-            dialogBinding.cardTeamA.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
-            dialogBinding.cardTeamB.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
-
-            fun highlightSelection(selectedCard: CardView, otherCard: CardView) {
-                val yellow = ContextCompat.getColor(requireContext(), R.color.yellow)
-                val white = ContextCompat.getColor(requireContext(), R.color.white)
-                selectedCard.setCardBackgroundColor(yellow)
-                otherCard.setCardBackgroundColor(white)
-            }
-
-            dialogBinding.cardTeamA.setOnClickListener {
-                selectedTeam = team1
-                highlightSelection(dialogBinding.cardTeamA, dialogBinding.cardTeamB)
-            }
-
-            dialogBinding.cardTeamB.setOnClickListener {
-                selectedTeam = team2
-                highlightSelection(dialogBinding.cardTeamB, dialogBinding.cardTeamA)
-            }
-
-            dialogBinding.btnClose.setOnClickListener {
-                dialog.dismiss()
-            }
-
-            dialogBinding.btnSubmit.setOnClickListener {
-                val pick = selectedTeam ?: "Draw"
-
-                val upcoming = if (match.matchEnded) 0 else 1
-                val wonMatches = if (match.matchEnded) winnerTeam(match) else 0
-
-                val venueParts = match.venue?.split(",")?.map { it.trim() } ?: emptyList()
-                val stadium = venueParts.getOrNull(0) ?: match.venue.orEmpty()
-                val city = venueParts.getOrNull(1) ?: match.city.orEmpty()
-                val country = match.country ?: ""
-
-                val entity = PredictionEntity(
-                    teamA = team1.toString(),
-                    teamB = team2.toString(),
-                    dateTime = match.dateTimeGMT ?: "",
-                    matchType = match.league ?: "",
-                    stadium = stadium,
-                    city = city,
-                    country = country,
-                    pick = pick,
-                    predicted = 1,
-                    corrects = 0,
-                    upcoming = upcoming,
-                    wonMatches = wonMatches
-
-                )
-                predictionsViewModel.addPrediction(entity)
-                dialog.dismiss()
-            }
-
-            dialog.show()
+            showForecastDialog(match)
         }
-
-        binding.btnTomorrow.setOnClickListener {
-            selectedBtn = binding.btnTomorrow
-            updateSelection(binding.btnTomorrow)
-            infoContainer.visibility = View.GONE
-            binding.tvNote.visibility = View.GONE
-            editNote.visibility = View.VISIBLE
-            saveButton.visibility = View.VISIBLE
-            editNote.setText(noteViewModel.noteText.value ?: "")
-        }
-
-        saveButton.setOnClickListener {
-            val text = editNote.text.toString()
-            noteViewModel.saveNote(noteKey, text)
-            binding.tvNote.text = text.takeIf { it.isNotBlank() } ?: getString(R.string.no_notes)
-            infoContainer.visibility = View.VISIBLE
-            editNote.visibility = View.GONE
-            saveButton.visibility = View.GONE
-            binding.tvNote.visibility = View.VISIBLE
-            selectedBtn = binding.btnToday
-            updateSelection(binding.btnToday)
-
-        }
-
-    }
-
-    private fun updateSelection(selectedButton: MaterialButton) {
-        buttons.forEach { button ->
-            val isSelected = button == selectedButton
-            val bg = if (isSelected) "#FFCE01" else "#00000000"
-            val text = if (isSelected) "#000000" else "#FFFFFF"
-            button.setBackgroundColor(Color.parseColor(bg))
-            button.setTextColor(Color.parseColor(text))
+        binding.btnSaveNote.setOnClickListener {
+            val newText = binding.editNote.text.toString()
+            noteViewModel.saveNote(noteKey, newText)
+            switchMode(true)
         }
     }
 
-    private fun bindMatch(match: Match) {
-        val formatterDate = DateTimeFormatter.ofPattern("dd.MM.yyyy")
-        val formatterTime = DateTimeFormatter.ofPattern("HH:mm")
+    private fun switchMode(infoMode: Boolean) {
+        binding.infoContainer.visibility = if (infoMode) View.VISIBLE else View.GONE
+        binding.tvNote.visibility      = if (infoMode) View.VISIBLE else View.GONE
+        binding.editNote.visibility    = if (infoMode) View.GONE    else View.VISIBLE
+        binding.btnSaveNote.visibility = if (infoMode) View.GONE    else View.VISIBLE
 
-        val date = runCatching { LocalDate.parse(match.date ?: "") }.getOrNull()
-        val time = match.dateTimeGMT.parseUtcToLocal()
+        val (btnInfo, btnEdit) = binding.btnToday to binding.btnTomorrow
+        listOf(btnInfo, btnEdit).forEach { btn ->
+            val sel = (btn == btnInfo) == infoMode
+            btn.setBackgroundColor(if (sel) Color.parseColor("#FFCE01") else Color.TRANSPARENT)
+            btn.setTextColor(if (sel) Color.BLACK else Color.WHITE)
+        }
 
-        binding.tvDateValue.text = date?.format(formatterDate) ?: (match.date.orDash())
-        binding.tvTimeValue.text = time?.format(formatterTime) ?: (match.dateTimeGMT.orDash())
-
-        val team1 = match.teamA ?: "-"
-        val team2 = match.teamB ?: "-"
-        binding.teamTitle.text = "$team1 - $team2"
-
-        binding.statusText.text = match.status.orDash()
-
-        val stadium = match.venue.orDash()
-        val city = match.city ?: "-"
-
-        binding.tvStadiumValue.text = stadium
-        binding.tvCityValue.text = city
-
-        val country = match.country ?: "-"
-        binding.tvCountryValue.text = country
-
-        binding.tvLeagueValue.text = match.league?.uppercase() ?: "-"
+        if (!infoMode) {
+            binding.editNote.setText(noteViewModel.noteText.value.orEmpty())
+        }
     }
+
+    private fun showForecastDialog(match: Match) {
+        val dialog = Dialog(requireContext())
+        val dlg = DialogPredictWinnerBinding.inflate(layoutInflater)
+        dialog.setContentView(dlg.root)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        var selected: String? = null
+        dlg.teamAText.text = match.teamA
+        dlg.teamBText.text = match.teamB
+
+        fun highlight(a: CardView, b: CardView) {
+            a.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.yellow))
+            b.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
+        }
+
+        dlg.cardTeamA.setOnClickListener {
+            selected = match.teamA; highlight(dlg.cardTeamA, dlg.cardTeamB)
+        }
+        dlg.cardTeamB.setOnClickListener {
+            selected = match.teamB; highlight(dlg.cardTeamB, dlg.cardTeamA)
+        }
+        dlg.btnClose.setOnClickListener { dialog.dismiss() }
+
+        dlg.btnSubmit.setOnClickListener {
+            val pick     = selected ?: "Draw"
+            val upcoming = if (match.matchEnded) 0 else 1
+            val won      = if (match.matchEnded) winnerTeam(match) else 0
+
+            val parts  = match.venue.orEmpty().split(",").map(String::trim)
+            val stadium = parts.getOrNull(0).orEmpty()
+            val city    = parts.getOrNull(1).orEmpty()
+            val country = match.country.orEmpty()
+
+            val entity = PredictionEntity(
+                teamA      = match.teamA.orEmpty(),
+                teamB      = match.teamB.orEmpty(),
+                dateTime   = match.dateTimeGMT.orEmpty(),
+                matchType  = match.league.orEmpty(),
+                stadium    = stadium,
+                city       = city,
+                country    = country,
+                pick       = pick,
+                predicted  = 1,
+                corrects   = 0,
+                upcoming   = upcoming,
+                wonMatches = won
+            )
+            predictionsViewModel.addPrediction(entity)
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
+    private fun bindMatch(m: Match) {
+        val dfDate = DateTimeFormatter.ofPattern("dd.MM.yyyy")
+        val dfTime = DateTimeFormatter.ofPattern("HH:mm")
+        val date   = runCatching { LocalDate.parse(m.date.orEmpty()) }.getOrNull()
+        val time   = m.dateTimeGMT.parseUtcToLocal()
+
+        binding.tvDateValue.text    = date?.format(dfDate) ?: m.date.orDash()
+        binding.tvTimeValue.text    = time?.format(dfTime) ?: m.dateTimeGMT.orDash()
+        binding.teamTitle.text      = "${m.teamA.orDash()} - ${m.teamB.orDash()}"
+        binding.statusText.text     = m.status.orDash()
+        binding.tvStadiumValue.text = m.venue.orDash()
+        binding.tvCityValue.text    = m.city.orDash()
+        binding.tvCountryValue.text = m.country.orDash()
+        binding.tvLeagueValue.text  = m.league?.uppercase().orDash()
+    }
+
+    private fun winnerTeam(m: Match): Int {
+        val a = m.scoreA ?: return 0
+        val b = m.scoreB ?: return 0
+        return when {
+            a > b    -> 1
+            b > a    -> 2
+            else     -> 0
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    private fun String?.orDash() = this?.takeIf { it.isNotBlank() } ?: "-"
 }
