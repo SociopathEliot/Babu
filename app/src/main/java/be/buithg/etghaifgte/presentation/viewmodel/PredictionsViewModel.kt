@@ -102,6 +102,7 @@ class PredictionsViewModel @Inject constructor(
             parsed == date
         }
 
+
         _predictedCount.value = filtered.size
         _upcomingCount.value = filtered.count { isUpcoming(it) }
         _wonCount.value = filtered.count { prediction ->
