@@ -14,7 +14,7 @@ import be.buithg.etghaifgte.databinding.DialogPredictWinnerBinding
 import be.buithg.etghaifgte.databinding.FragmentMatchDetailBinding
 import androidx.navigation.fragment.navArgs
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.cardview.widget.CardView
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
@@ -44,7 +44,7 @@ class MatchDetailFragment : Fragment() {
     private val args: MatchDetailFragmentArgs by navArgs()
 
     private lateinit var binding: FragmentMatchDetailBinding
-    private val predictionsViewModel: PredictionsViewModel by viewModels()
+    private val predictionsViewModel: PredictionsViewModel by activityViewModels()
     private val noteViewModel: NoteViewModel by viewModels()
     private var selectedTeam: String? = null
     private lateinit var buttons: List<MaterialButton>

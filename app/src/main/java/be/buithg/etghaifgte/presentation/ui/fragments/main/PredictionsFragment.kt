@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import be.buithg.etghaifgte.R
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import be.buithg.etghaifgte.databinding.FragmentPredictionsBinding
 import androidx.core.view.isVisible
@@ -19,7 +19,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class PredictionsFragment : Fragment() {
 
     private lateinit var binding: FragmentPredictionsBinding
-    private val viewModel: PredictionsViewModel by viewModels()
+    private val viewModel: PredictionsViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
