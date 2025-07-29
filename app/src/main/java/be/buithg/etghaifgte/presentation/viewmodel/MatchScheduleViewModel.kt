@@ -19,8 +19,16 @@ class MatchScheduleViewModel @Inject constructor(
     private val _matches = MutableLiveData<List<Match>>(emptyList())
     val matches: LiveData<List<Match>> = _matches
 
+    private val _loading = MutableLiveData(false)
+    val loading: LiveData<Boolean> = _loading
+
+    private val _error = MutableLiveData(false)
+    val error: LiveData<Boolean> = _error
+
     fun loadMatches() {
         viewModelScope.launch {
+            _loading.value = true
+            _error.value = false
             runCatching { getCurrentMatchesUseCase() }
                 .onSuccess {
                     Log.d("MSF", "Successfully loaded matches: ${it.size}")
@@ -29,9 +37,10 @@ class MatchScheduleViewModel @Inject constructor(
                 .onFailure { t ->
                     Log.e("MSkjhF", "Error loading matches", t)
                     _matches.value = emptyList()
+                    _error.value = true
                 }
+            _loading.value = false
         }
-
     }
 }
 
