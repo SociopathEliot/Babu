@@ -139,7 +139,7 @@ class PredictionHistoryFragment : Fragment() {
             league = matchType,
             venue = stadium,
             city = city,
-            country = null,
+            country = country,
             teamA = teamA,
             teamB = teamB,
             scoreA = null,

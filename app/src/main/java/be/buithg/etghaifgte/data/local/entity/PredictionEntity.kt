@@ -12,6 +12,7 @@ data class PredictionEntity(
     val matchType: String,
     val stadium: String,
     val city: String,
+    val country: String,
     val pick: String,
     val predicted: Int,
     val corrects: Int,
