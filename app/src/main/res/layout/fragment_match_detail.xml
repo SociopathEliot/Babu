@@ -339,6 +339,7 @@
                         android:layout_weight="1"
                         android:fontFamily="@font/montserrat_medium"
                         android:ellipsize="end"
+                        android:gravity="end"
                         android:maxLines="1"
                         android:text="Extremely Long Stadium Name That Would Otherwise Overlap"
                         android:textColor="#FFFFFF"

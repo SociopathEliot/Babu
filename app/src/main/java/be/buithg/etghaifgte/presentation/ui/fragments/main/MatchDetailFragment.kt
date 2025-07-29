@@ -16,6 +16,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.cardview.widget.CardView
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
 import be.buithg.etghaifgte.data.local.entity.PredictionEntity

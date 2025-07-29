@@ -26,6 +26,7 @@ import be.buithg.etghaifgte.presentation.ui.fragments.main.MatchScheduleFragment
 import be.buithg.etghaifgte.presentation.viewmodel.PredictionsViewModel
 import be.buithg.etghaifgte.utils.NetworkUtils.isInternetAvailable
 import androidx.core.view.isVisible
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 
