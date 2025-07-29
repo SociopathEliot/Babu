@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import be.buithg.etghaifgte.R
 import be.buithg.etghaifgte.databinding.FragmentStatsBinding
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import be.buithg.etghaifgte.data.local.entity.PredictionEntity
 import be.buithg.etghaifgte.presentation.viewmodel.PredictionsViewModel
@@ -31,7 +31,7 @@ class StatsFragment : Fragment(R.layout.fragment_stats) {
 
     private var _binding: FragmentStatsBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: PredictionsViewModel by viewModels()
+    private val viewModel: PredictionsViewModel by activityViewModels()
 
     private fun isWin(item: PredictionEntity): Boolean {
         return when (item.wonMatches) {

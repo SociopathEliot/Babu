@@ -18,7 +18,7 @@ import be.buithg.etghaifgte.presentation.ui.adapters.MatchAdapter
 import be.buithg.etghaifgte.presentation.viewmodel.MatchScheduleViewModel
 import be.buithg.etghaifgte.domain.model.Match
 
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import com.google.android.material.button.MaterialButton
 import androidx.navigation.fragment.findNavController
@@ -36,7 +36,7 @@ class MatchScheduleFragment : Fragment() {
 
     private lateinit var binding: FragmentMatchScheduleBinding
     private val viewModel: MatchScheduleViewModel by viewModels()
-    private val predictionsViewModel: PredictionsViewModel by viewModels()
+    private val predictionsViewModel: PredictionsViewModel by activityViewModels()
     private lateinit var buttons: List<MaterialButton>
     private lateinit var adapter: MatchAdapter
     private var allMatches: List<Match> = emptyList()
@@ -114,7 +114,15 @@ class MatchScheduleFragment : Fragment() {
             button.setOnClickListener {
                 selectedBtn = button
                 updateSelection(button)
-                filterAndDisplay( (selectedBtn ?: binding.btnToday).id )
+
+                val date = when (button.id) {
+                    R.id.btnYesterday -> LocalDate.now().minusDays(1)
+                    R.id.btnTomorrow  -> LocalDate.now().plusDays(1)
+                    else              -> LocalDate.now()
+                }
+                predictionsViewModel.setFilterDate(date)
+
+                filterAndDisplay((selectedBtn ?: binding.btnToday).id)
             }
         }
 

@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import android.widget.Toast
 import be.buithg.etghaifgte.R
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.core.content.edit
 import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
@@ -29,7 +29,7 @@ import be.buithg.etghaifgte.utils.Constants.getSharedPreferences
 class AchievementsFragment : Fragment() {
 
     private lateinit var  binding: FragmentAchievementsBinding
-    private val viewModel: PredictionsViewModel by viewModels()
+    private val viewModel: PredictionsViewModel by activityViewModels()
 
     private val levels = listOf("Starter","Beginner", "Intermediate", "EXPERT")
 
