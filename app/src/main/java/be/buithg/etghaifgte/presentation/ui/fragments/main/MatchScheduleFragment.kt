@@ -174,7 +174,9 @@ class MatchScheduleFragment : Fragment() {
         }
         val toShow = filtered.take(10)
 
-        val upcomingCount = filtered.count { !it.matchEnded }
+        // Upcoming matches count should reflect only items displayed in
+        // the RecyclerView, not the entire filtered set
+        val upcomingCount = toShow.count { !it.matchEnded }
         binding.tvUpcomingCount.text = upcomingCount.toString().padStart(2, '0')
 
         binding.recyclerMatcher.adapter = MatchAdapter(ArrayList(toShow)) { match ->
