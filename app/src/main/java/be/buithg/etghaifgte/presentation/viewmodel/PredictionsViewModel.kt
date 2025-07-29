@@ -97,7 +97,11 @@ class PredictionsViewModel @Inject constructor(
         val list = _predictions.value ?: emptyList()
         val filtered = filterDate?.let { date ->
             list.filter {
-                it.dateTime.parseUtcToLocal()?.toLocalDate() == date
+                val dt = runCatching {
+                    it.dateTime.substring(0, 10)
+                }.getOrNull()
+                val parsed = runCatching { LocalDate.parse(dt) }.getOrNull()
+                parsed == date
             }
         } ?: list
 
