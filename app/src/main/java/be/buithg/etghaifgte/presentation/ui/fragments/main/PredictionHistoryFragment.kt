@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import be.buithg.etghaifgte.R
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import be.buithg.etghaifgte.databinding.FragmentPredictionHistoryBinding
 import androidx.core.view.isVisible
@@ -25,7 +25,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class PredictionHistoryFragment : Fragment() {
 
     private lateinit var binding: FragmentPredictionHistoryBinding
-    private val viewModel: PredictionsViewModel by viewModels()
+    private val viewModel: PredictionsViewModel by activityViewModels()
 
     private lateinit var buttons: List<MaterialButton>
     private var allPredictions: List<PredictionEntity> = emptyList()
