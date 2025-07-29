@@ -77,7 +77,8 @@ class PredictionsViewModel @Inject constructor(
             val list = getPredictionsUseCase()
             refreshUpcomingMatches(list)
             _predictions.value = getPredictionsUseCase()
-            updateCountsWithFilter()
+            val date = filterDate ?: LocalDate.now()
+            updateCountsForDate(date)
         }
     }
 
@@ -90,20 +91,17 @@ class PredictionsViewModel @Inject constructor(
 
     fun setFilterDate(date: LocalDate) {
         filterDate = date
-        updateCountsWithFilter()
+        updateCountsForDate(date)
     }
 
-    private fun updateCountsWithFilter() {
+    private fun updateCountsForDate(date: LocalDate) {
         val list = _predictions.value ?: emptyList()
-        val filtered = filterDate?.let { date ->
-            list.filter {
-                val dt = runCatching {
-                    it.dateTime.substring(0, 10)
-                }.getOrNull()
-                val parsed = runCatching { LocalDate.parse(dt) }.getOrNull()
-                parsed == date
-            }
-        } ?: list
+        val filtered = list.filter {
+            val dt = runCatching { it.dateTime.substring(0, 10) }.getOrNull()
+            val parsed = runCatching { LocalDate.parse(dt) }.getOrNull()
+            parsed == date
+        }
+
 
         _predictedCount.value = filtered.size
         _upcomingCount.value = filtered.count { isUpcoming(it) }
