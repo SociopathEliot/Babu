@@ -11,7 +11,6 @@ data class PredictionEntity(
     val dateTime: String,
     val matchTime: Long,
     val dayIndex: Int,
-
     val matchType: String,
     val stadium: String,
     val city: String,

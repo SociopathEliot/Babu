@@ -28,5 +28,4 @@ interface PredictionDao {
         """
     )
     fun getDailyStats(index: Int): Flow<DailyStats>
-
 }
