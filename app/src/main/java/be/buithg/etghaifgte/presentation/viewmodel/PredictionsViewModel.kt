@@ -37,6 +37,8 @@ class PredictionsViewModel @Inject constructor(
 
     private var filterDate: LocalDate? = null
 
+    private val predictedCounts = mutableMapOf<LocalDate, Int>()
+
     private fun winnerTeam(match: Match): Int {
         // 1 — teamA, 2 — teamB, 0 — ничья или неизвестно
 
@@ -76,7 +78,9 @@ class PredictionsViewModel @Inject constructor(
         viewModelScope.launch {
             val list = getPredictionsUseCase()
             refreshUpcomingMatches(list)
-            _predictions.value = getPredictionsUseCase()
+            val updated = getPredictionsUseCase()
+            computePredictedCounts(updated)
+            _predictions.value = updated
             val date = filterDate ?: LocalDate.now()
             updateCountsForDate(date)
         }
@@ -85,13 +89,32 @@ class PredictionsViewModel @Inject constructor(
     fun addPrediction(entity: PredictionEntity) {
         viewModelScope.launch {
             addPredictionUseCase(entity)
-            loadPredictions()
+            val list = _predictions.value?.toMutableList() ?: mutableListOf()
+            list.add(0, entity)
+            _predictions.value = list
+
+            runCatching { LocalDate.parse(entity.dateTime.substring(0, 10)) }.getOrNull()?.let { date ->
+                predictedCounts[date] = (predictedCounts[date] ?: 0) + 1
+            }
+
+            updateCountsForDate(filterDate ?: LocalDate.now())
         }
     }
 
     fun setFilterDate(date: LocalDate) {
         filterDate = date
         updateCountsForDate(date)
+    }
+
+    private fun computePredictedCounts(list: List<PredictionEntity>) {
+        predictedCounts.clear()
+        list.forEach { item ->
+            runCatching { LocalDate.parse(item.dateTime.substring(0, 10)) }
+                .getOrNull()
+                ?.let { date ->
+                    predictedCounts[date] = (predictedCounts[date] ?: 0) + 1
+                }
+        }
     }
 
     private fun updateCountsForDate(date: LocalDate) {
@@ -102,8 +125,7 @@ class PredictionsViewModel @Inject constructor(
             parsed == date
         }
 
-
-        _predictedCount.value = filtered.size
+        _predictedCount.value = predictedCounts[date] ?: filtered.size
         _upcomingCount.value = filtered.count { isUpcoming(it) }
         _wonCount.value = filtered.count { prediction ->
             if (isUpcoming(prediction)) return@count false
