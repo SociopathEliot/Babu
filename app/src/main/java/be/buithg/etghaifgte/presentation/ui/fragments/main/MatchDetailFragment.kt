@@ -155,7 +155,7 @@ class MatchDetailFragment : Fragment() {
                     teamA = team1.toString(),
                     teamB = team2.toString(),
                     dateTime = match.dateTimeGMT ?: "",
-                    matchType = match.matchType ?: "",
+                    matchType = match.league ?: "",
                     stadium = stadium,
                     city = city,
                     pick = pick,
@@ -232,6 +232,6 @@ class MatchDetailFragment : Fragment() {
         val country = match.country ?: "-"
         binding.tvCountryValue.text = country
 
-        binding.tvMatchTypeValue.text = match.matchType?.uppercase() ?: "-"
+        binding.tvLeagueValue.text = match.league?.uppercase() ?: "-"
     }
 }
