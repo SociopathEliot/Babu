@@ -37,9 +37,9 @@ fun EspnEvent.toMatch(league: String): Match? {
 }
 
 data class EspnEvent(
-    val date: String?,
     val competitions: List<Competition>?,
     val status: StatusWrapper?,
+
 )
 
 data class Competition(
@@ -59,6 +59,7 @@ data class VenueAddress(
     val city: String?,
     val country: String?,
     val state: String?
+
 )
 
 data class Competitor(
@@ -68,9 +69,7 @@ data class Competitor(
 )
 
 data class Team(
-    val name: String?,
-    val shortDisplayName: String?,
-    val abbreviation: String?
+    val shortDisplayName: String?
 )
 
 data class StatusWrapper(
@@ -79,8 +78,7 @@ data class StatusWrapper(
 
 data class StatusType(
     val description: String?,
-    val state: String?,
-    val shortDetail: String?
+    val state: String?
 )
 
 data class CompetitionType(
