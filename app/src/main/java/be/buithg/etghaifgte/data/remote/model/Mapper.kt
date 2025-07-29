@@ -17,11 +17,23 @@ fun EspnEvent.toMatch(league: String): Match? {
             else -> null
         }
 
+    val matchType = competition.type?.text
+        ?: season?.slug?.let { slug ->
+            slug.split("-")
+                .filter { part -> part.any { it.isLetter() } }
+                .joinToString(" ") { part ->
+                    part.replaceFirstChar { ch ->
+                        if (ch.isLowerCase()) ch.titlecase() else ch.toString()
+                    }
+                }
+                .ifBlank { null }
+        }
+
     return Match(
         date         = competition.date?.substring(0,10),
         dateTimeGMT  = competition.date,
         status       = competition.status?.type?.description,
-        matchType    = competition.type?.text,
+        matchType    = matchType,
         league       = league,
         venue        = competition.venue?.fullName,
         city         = competition.venue?.address?.city,
@@ -36,8 +48,9 @@ fun EspnEvent.toMatch(league: String): Match? {
 
 data class EspnEvent(
     val competitions: List<Competition>?,
-    // в JSON у вас есть и это поле, берем его на всякий случай как fallback
-    val venue: EventVenue?
+    val status: StatusWrapper?,
+    val season: Season?
+
 )
 
 data class Competition(
@@ -82,46 +95,8 @@ data class CompetitionType(
     val text: String?
 )
 
-// Расширение для конвертации в ваш Match
-fun EspnEvent.toMatch(league: String): Match? {
-    // Первый competition
-    val comp = competitions?.firstOrNull() ?: return null
-
-    // Тип матча: из CompetitionType.text, если пуст — из названия лиги
-    val matchType = comp.type?.text
-        .takeUnless { it.isNullOrBlank() }
-        ?: league
-
-    // Город: сначала из competition.venue.address.city, иначе из event.venue.displayName
-    val city = comp.venue
-        ?.address
-        ?.city
-        .takeUnless { it.isNullOrBlank() }
-        ?: this.venue?.displayName
-
-    // Страна: из competition.venue.address.country
-    val country = comp.venue
-        ?.address
-        ?.country
-
-    // Домашняя и гостевая команды
-    val home = comp.competitors?.find { it.homeAway == "home" }
-    val away = comp.competitors?.find { it.homeAway == "away" }
-
-
-    return Match(
-        date        = comp.date?.substring(0, 10),
-        dateTimeGMT = comp.date,
-        status      = comp.status?.type?.description,
-        matchType   = matchType,         // теперь не берём shortName
-        league      = league,
-        venue       = comp.venue?.fullName,
-        city        = city,
-        country      = country,
-        teamA       = home?.team?.shortDisplayName,
-        teamB       = away?.team?.shortDisplayName,
-        scoreA      = home?.score?.toIntOrNull(),
-        scoreB      = away?.score?.toIntOrNull(),
-        matchEnded  = comp.status?.type?.state == "post"
-    )
-}
+data class Season(
+    val year: Int?,
+    val type: Int?,
+    val slug: String?,
+)
