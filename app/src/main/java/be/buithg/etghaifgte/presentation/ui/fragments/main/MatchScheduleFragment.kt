@@ -75,7 +75,7 @@ class MatchScheduleFragment : Fragment() {
         } else {
             Log.e("FFFF", "No Internet connection")
             allMatches = emptyList()
-            filterAndDisplay(selectedBtn ?: binding.btnToday)
+            filterAndDisplay( (selectedBtn ?: binding.btnToday).id )
         }
 
         binding.btnHelp.setOnClickListener {
@@ -94,8 +94,7 @@ class MatchScheduleFragment : Fragment() {
 
         viewModel.matches.observe(viewLifecycleOwner) { list ->
             allMatches = list ?: emptyList()
-            filterAndDisplay(selectedBtn ?: binding.btnToday)
-
+            filterAndDisplay( (selectedBtn ?: binding.btnToday).id )
         }
 
         predictionsViewModel.predictedCount.observe(viewLifecycleOwner) {
@@ -119,7 +118,7 @@ class MatchScheduleFragment : Fragment() {
             button.setOnClickListener {
                 selectedBtn = button
                 updateSelection(button)
-                filterAndDisplay(button)
+                filterAndDisplay( (selectedBtn ?: binding.btnToday).id )
             }
         }
 
@@ -155,49 +154,31 @@ class MatchScheduleFragment : Fragment() {
         }
     }
 
-    private fun filterAndDisplay(button: MaterialButton) {
-        val now = LocalDateTime.now()
+    // в MatchScheduleFragment
 
-        // Отбираем матчи на основе даты события, а не на основе calendar
-        val filtered = when (button.id) {
-            R.id.btnYesterday -> {
-                // Любые уже завершённые матчи
+    private fun filterAndDisplay(buttonId: Int) {
+        val filtered = when (buttonId) {
+            R.id.btnYesterday -> allMatches.filter { it.matchEnded }
+            R.id.btnTomorrow  -> allMatches.filter { !it.matchEnded }
+            else              -> {
+                val today = LocalDate.now()
                 allMatches.filter {
-                    runCatching { LocalDateTime.parse(it.dateTimeGMT) }
-                        .getOrNull()?.isBefore(now) == true
-                }
-            }
-            R.id.btnTomorrow -> {
-                // Любые ещё НЕ завершённые (будущие) матчи
-                allMatches.filter {
-                    runCatching { LocalDateTime.parse(it.dateTimeGMT) }
-                        .getOrNull()?.isAfter(now) == true
-                }
-            }
-            else /* Today */ -> {
-                // Оставляем только те, чей день совпадает с today
-                allMatches.filter {
-                    runCatching { LocalDate.parse(it.date) }
-                        .getOrNull() == LocalDate.now()
+                    runCatching { LocalDate.parse(it.date) }.getOrNull() == today
                 }
             }
         }
-        // Показать первые 10 (или сколько нужно)
         val toShow = filtered.take(10)
-
-        // Обновляем адаптер
-        adapter = MatchAdapter(ArrayList(toShow)) { match ->
+        binding.recyclerMatcher.adapter = MatchAdapter(ArrayList(toShow)) { match ->
+            // Важный кусок — обязательно здесь навигация
             val action = MatchScheduleFragmentDirections
                 .actionMatchScheduleFragmentToMatchDetailFragment(match, false)
             findNavController().navigate(action)
         }
-        binding.recyclerMatcher.adapter = adapter
-
-        // Состояние пустого списка
-        binding.emptyText.isVisible = toShow.isEmpty()
-        binding.btnRetry.isVisible = toShow.isEmpty()
+        binding.emptyText.isVisible       = toShow.isEmpty()
+        binding.btnRetry.isVisible        = toShow.isEmpty()
         binding.recyclerMatcher.isVisible = toShow.isNotEmpty()
     }
+
 
 
     override fun onDestroyView() {
