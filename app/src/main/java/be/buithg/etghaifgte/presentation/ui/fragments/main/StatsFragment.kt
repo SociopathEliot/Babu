@@ -118,8 +118,8 @@ class StatsFragment : Fragment(R.layout.fragment_stats) {
             setDrawRoundedSlices(true)
         }
         val correct = data.count { isWin(it) }.toFloat()
-        val incorrect = data.count { it.upcoming == 0 && !isWin(it) }.toFloat()
-        val pending = data.count { it.upcoming == 1 }.toFloat()
+        val incorrect = data.count { !it.upcomingFlag && !isWin(it) }.toFloat()
+        val pending = data.count { it.upcomingFlag }.toFloat()
 
         val entries = listOf(PieEntry(correct), PieEntry(incorrect), PieEntry(pending))
         val ds = PieDataSet(entries, "").apply {
