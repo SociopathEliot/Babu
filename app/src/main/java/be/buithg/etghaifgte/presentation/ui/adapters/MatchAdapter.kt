@@ -9,8 +9,8 @@ import be.buithg.etghaifgte.databinding.MatchItemBinding
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import be.buithg.etghaifgte.utils.parseUtcToLocal
 
 import be.buithg.etghaifgte.domain.model.Match
 
@@ -64,7 +64,7 @@ class MatchAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: Match, position: Int) {
-            val ldt = runCatching { LocalDateTime.parse(item.dateTimeGMT ?: "") }.getOrNull()
+            val ldt = item.dateTimeGMT.parseUtcToLocal()
             val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
             binding.tvTime.text = ldt?.format(timeFormatter) ?: "12:29"
 
