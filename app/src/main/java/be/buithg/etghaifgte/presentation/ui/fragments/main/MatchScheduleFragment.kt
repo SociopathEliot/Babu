@@ -55,9 +55,14 @@ class MatchScheduleFragment : Fragment() {
     override fun onViewCreated(view: android.view.View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // 1) Инициализируем Today
-        selectedBtn = binding.btnToday
-        predictionsViewModel.setFilterDate(LocalDate.now())
+        // 1) Определяем выбранный ранее день
+        val current = predictionsViewModel.getFilterDate()
+        selectedBtn = when (current) {
+            LocalDate.now().minusDays(1) -> binding.btnYesterday
+            LocalDate.now().plusDays(1)  -> binding.btnTomorrow
+            else                         -> binding.btnToday
+        }
+        predictionsViewModel.setFilterDate(current)
 
         // 2) Подписываемся на метрики прогнозов
         predictionsViewModel.predictedCount.observe(viewLifecycleOwner) {
@@ -118,7 +123,7 @@ class MatchScheduleFragment : Fragment() {
                 filterAndDisplay(btn.id)
             }
         }
-        updateSelection(binding.btnToday)
+        updateSelection(selectedBtn!!)
     }
 
     private fun updateSelection(selected: MaterialButton) {

@@ -53,8 +53,8 @@ class PredictionsViewModel @Inject constructor(
     fun addPrediction(entity: PredictionEntity) = viewModelScope.launch {
         addPredictionUseCase(entity)
         _predictions.value = listOf(entity) + (_predictions.value.orEmpty())
-        entity.dateTime.parseUtcToLocal()
-            ?.toLocalDate()
+        runCatching { LocalDate.parse(entity.dateTime.substring(0, 10)) }
+            .getOrNull()
             ?.let { d -> predictedCounts[d] = (predictedCounts[d] ?: 0) + 1 }
         updateCountsForDate()
     }
@@ -64,11 +64,13 @@ class PredictionsViewModel @Inject constructor(
         updateCountsForDate()
     }
 
+    fun getFilterDate(): LocalDate = filterDate
+
     private fun computePredictedCounts(list: List<PredictionEntity>) {
         predictedCounts.clear()
         list.forEach { e ->
-            e.dateTime.parseUtcToLocal()
-                ?.toLocalDate()
+            runCatching { LocalDate.parse(e.dateTime.substring(0, 10)) }
+                .getOrNull()
                 ?.let { d -> predictedCounts[d] = (predictedCounts[d] ?: 0) + 1 }
         }
     }
@@ -76,7 +78,9 @@ class PredictionsViewModel @Inject constructor(
     private fun updateCountsForDate() {
         _predictedCount.value = predictedCounts[filterDate] ?: 0
         val listForDate = _predictions.value.orEmpty().filter {
-            it.dateTime.parseUtcToLocal()?.toLocalDate() == filterDate
+            val date = runCatching { LocalDate.parse(it.dateTime.substring(0, 10)) }
+                .getOrNull()
+            date == filterDate
         }
         _upcomingCount.value = listForDate.count { isUpcoming(it) }
         _wonCount.value      = listForDate.count { it.upcoming == 0 && it.wonMatches > 0 }
