@@ -115,7 +115,15 @@ class MatchScheduleFragment : Fragment() {
             button.setOnClickListener {
                 selectedBtn = button
                 updateSelection(button)
-                filterAndDisplay( (selectedBtn ?: binding.btnToday).id )
+
+                val date = when (button.id) {
+                    R.id.btnYesterday -> LocalDate.now().minusDays(1)
+                    R.id.btnTomorrow  -> LocalDate.now().plusDays(1)
+                    else              -> LocalDate.now()
+                }
+                predictionsViewModel.setFilterDate(date)
+
+                filterAndDisplay((selectedBtn ?: binding.btnToday).id)
             }
         }
 
