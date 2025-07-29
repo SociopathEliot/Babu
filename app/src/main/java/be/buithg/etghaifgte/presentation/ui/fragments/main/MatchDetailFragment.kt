@@ -149,7 +149,7 @@ class MatchDetailFragment : Fragment() {
 
                 val venueParts = match.venue?.split(",")?.map { it.trim() } ?: emptyList()
                 val stadium = venueParts.getOrNull(0) ?: match.venue.orEmpty()
-                val city = venueParts.getOrNull(1) ?: ""
+                val city = venueParts.getOrNull(1) ?: match.city.orEmpty()
                 val country = match.country ?: ""
 
                 val entity = PredictionEntity(
