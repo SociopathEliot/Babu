@@ -90,7 +90,7 @@ class PredictionHistoryFragment : Fragment() {
     }
 
     private fun isUpcoming(item: PredictionEntity): Boolean {
-        if (item.upcoming == 1) return true
+        if (item.upcomingFlag) return true
         val dt = item.dateTime.parseUtcToLocal()
         return dt?.isAfter(LocalDateTime.now()) ?: false
     }

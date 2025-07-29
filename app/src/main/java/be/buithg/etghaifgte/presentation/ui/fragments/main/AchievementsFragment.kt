@@ -199,7 +199,7 @@ class AchievementsFragment : Fragment() {
         binding.progressIndicator3.progress = progressWin
         binding.textPercent3.text = "$progressWin % completed"
 
-        val completed = list.filter { it.upcoming == 0 }
+        val completed = list.filter { !it.upcomingFlag }
         var streak = 0
         var maxStreak = 0
         completed.forEach { item ->
