@@ -35,9 +35,9 @@ fun EspnEvent.toMatch(league: String): Match? {
 }
 
 data class EspnEvent(
-    val date: String?,
     val competitions: List<Competition>?,
-    val status: StatusWrapper?
+    // в JSON у вас есть и это поле, берем его на всякий случай как fallback
+    val venue: EventVenue?
 )
 
 data class Competition(
@@ -66,9 +66,7 @@ data class Competitor(
 )
 
 data class Team(
-    val name: String?,
-    val shortDisplayName: String?,
-    val abbreviation: String?
+    val shortDisplayName: String?
 )
 
 data class StatusWrapper(
@@ -77,10 +75,53 @@ data class StatusWrapper(
 
 data class StatusType(
     val description: String?,
-    val state: String?,
-    val shortDetail: String?
+    val state: String?
 )
 
 data class CompetitionType(
     val text: String?
 )
+
+// Расширение для конвертации в ваш Match
+fun EspnEvent.toMatch(league: String): Match? {
+    // Первый competition
+    val comp = competitions?.firstOrNull() ?: return null
+
+    // Тип матча: из CompetitionType.text, если пуст — из названия лиги
+    val matchType = comp.type?.text
+        .takeUnless { it.isNullOrBlank() }
+        ?: league
+
+    // Город: сначала из competition.venue.address.city, иначе из event.venue.displayName
+    val city = comp.venue
+        ?.address
+        ?.city
+        .takeUnless { it.isNullOrBlank() }
+        ?: this.venue?.displayName
+
+    // Страна: из competition.venue.address.country
+    val country = comp.venue
+        ?.address
+        ?.country
+
+    // Домашняя и гостевая команды
+    val home = comp.competitors?.find { it.homeAway == "home" }
+    val away = comp.competitors?.find { it.homeAway == "away" }
+
+
+    return Match(
+        date        = comp.date?.substring(0, 10),
+        dateTimeGMT = comp.date,
+        status      = comp.status?.type?.description,
+        matchType   = matchType,         // теперь не берём shortName
+        league      = league,
+        venue       = comp.venue?.fullName,
+        city        = city,
+        country      = country,
+        teamA       = home?.team?.shortDisplayName,
+        teamB       = away?.team?.shortDisplayName,
+        scoreA      = home?.score?.toIntOrNull(),
+        scoreB      = away?.score?.toIntOrNull(),
+        matchEnded  = comp.status?.type?.state == "post"
+    )
+}
