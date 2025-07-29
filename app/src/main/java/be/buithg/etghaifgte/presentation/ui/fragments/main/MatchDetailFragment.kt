@@ -160,12 +160,14 @@ class MatchDetailFragment : Fragment() {
                 else               -> 0
             }
 
+
             val entity = PredictionEntity(
                 teamA      = match.teamA.orEmpty(),
                 teamB      = match.teamB.orEmpty(),
                 dateTime   = match.dateTimeGMT.orEmpty(),
                 matchTime  = matchTime,
                 dayIndex   = dayIndex,
+
                 matchType  = match.league.orEmpty(),
                 stadium    = stadium,
                 city       = city,

@@ -32,5 +32,6 @@ class PredictionRepositoryImpl @Inject constructor(
             else               -> 0
         }
         return dao.getDailyStats(index)
+
     }
 }
