@@ -142,10 +142,21 @@ class MatchDetailFragment : Fragment() {
             val city    = parts.getOrNull(1).orEmpty()
             val country = match.country.orEmpty()
 
+            val matchTime = runCatching {
+                java.time.OffsetDateTime.parse(match.dateTimeGMT)
+                    .toInstant()
+                    .toEpochMilli()
+            }.getOrDefault(0L)
+            val wonFlag = when (won) {
+                1 -> pick == match.teamA
+                2 -> pick == match.teamB
+                else -> false
+            }
             val entity = PredictionEntity(
                 teamA      = match.teamA.orEmpty(),
                 teamB      = match.teamB.orEmpty(),
                 dateTime   = match.dateTimeGMT.orEmpty(),
+                matchTime  = matchTime,
                 matchType  = match.league.orEmpty(),
                 stadium    = stadium,
                 city       = city,
@@ -154,7 +165,9 @@ class MatchDetailFragment : Fragment() {
                 predicted  = 1,
                 corrects   = 0,
                 upcoming   = upcoming,
-                wonMatches = won
+                wonMatches = won,
+                upcomingFlag = upcoming == 1,
+                won = wonFlag
             )
             predictionsViewModel.addPrediction(entity)
             dialog.dismiss()

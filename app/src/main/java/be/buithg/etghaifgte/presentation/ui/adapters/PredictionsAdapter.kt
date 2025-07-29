@@ -35,7 +35,7 @@ class PredictionsAdapter(
             binding.textPrediction.text = item.pick // or "Pick: ${item.pick}"
 
             binding.textTeams.text = "${item.teamA} - ${item.teamB}"
-            val isUpcoming = if (item.upcoming == 1) {
+            val isUpcoming = if (item.upcomingFlag) {
                 true
             } else {
                 dt?.isAfter(LocalDateTime.now()) ?: false
