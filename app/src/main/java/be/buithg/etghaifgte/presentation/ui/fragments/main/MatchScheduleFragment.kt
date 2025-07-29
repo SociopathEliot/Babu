@@ -86,7 +86,6 @@ class MatchScheduleFragment : Fragment() {
 
         lifecycleScope.launchWhenStarted {
             predictionsViewModel.dailyStats.collect { stats ->
-                binding.tvUpcomingCount.text = stats.upcoming.toString().padStart(2, '0')
                 binding.tvWonCount.text = stats.won.toString().padStart(2, '0')
             }
         }
@@ -174,6 +173,9 @@ class MatchScheduleFragment : Fragment() {
             }
         }
         val toShow = filtered.take(10)
+
+        val upcomingCount = filtered.count { !it.matchEnded }
+        binding.tvUpcomingCount.text = upcomingCount.toString().padStart(2, '0')
 
         binding.recyclerMatcher.adapter = MatchAdapter(ArrayList(toShow)) { match ->
             findNavController().navigate(
