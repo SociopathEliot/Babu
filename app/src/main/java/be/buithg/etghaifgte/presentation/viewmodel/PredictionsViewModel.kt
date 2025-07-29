@@ -64,6 +64,8 @@ class PredictionsViewModel @Inject constructor(
         updateCountsForDate()
     }
 
+    fun getFilterDate(): LocalDate = filterDate
+
     private fun computePredictedCounts(list: List<PredictionEntity>) {
         predictedCounts.clear()
         list.forEach { e ->
