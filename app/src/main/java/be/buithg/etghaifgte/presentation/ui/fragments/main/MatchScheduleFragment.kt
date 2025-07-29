@@ -41,6 +41,7 @@ class MatchScheduleFragment : Fragment() {
     private lateinit var buttons: List<MaterialButton>
     private var allMatches: List<Match> = emptyList()
     private var selectedBtn: MaterialButton? = null
+    private var loadError = false
 
     private lateinit var connectivityManager: ConnectivityManager
     private var networkCallback: ConnectivityManager.NetworkCallback? = null
@@ -117,10 +118,30 @@ class MatchScheduleFragment : Fragment() {
             else Log.e("MatchSchedule", "No Internet")
         }
 
+        viewModel.loading.observe(viewLifecycleOwner) { isLoading ->
+            binding.progressBar.isVisible = isLoading
+            if (isLoading) {
+                binding.recyclerMatcher.isVisible = false
+                binding.emptyText.isVisible = false
+                binding.btnRetry.isVisible = false
+            } else {
+                filterAndDisplay(selectedBtn!!.id)
+            }
+        }
+
+        viewModel.error.observe(viewLifecycleOwner) { err ->
+            loadError = err
+            if (!viewModel.loading.value!!) {
+                filterAndDisplay(selectedBtn!!.id)
+            }
+        }
+
         // 5) Слушаем список матчей
         viewModel.matches.observe(viewLifecycleOwner) { list ->
             allMatches = list.orEmpty()
-            filterAndDisplay(selectedBtn!!.id)
+            if (viewModel.loading.value != true) {
+                filterAndDisplay(selectedBtn!!.id)
+            }
         }
 
         // 6) Настраиваем табы Yesterday/Today/Tomorrow
@@ -186,7 +207,7 @@ class MatchScheduleFragment : Fragment() {
             )
         }
         binding.emptyText.isVisible       = toShow.isEmpty()
-        binding.btnRetry.isVisible        = toShow.isEmpty()
+        binding.btnRetry.isVisible        = loadError && toShow.isEmpty()
         binding.recyclerMatcher.isVisible = toShow.isNotEmpty()
     }
 
