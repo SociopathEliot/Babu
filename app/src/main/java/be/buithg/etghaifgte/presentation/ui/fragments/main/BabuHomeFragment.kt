@@ -9,19 +9,19 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import be.buithg.etghaifgte.R
-import be.buithg.etghaifgte.databinding.FragmentHomeBinding
+import be.buithg.etghaifgte.databinding.FragmentBabuHomeBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class HomeFragment : Fragment() {
+class BabuHomeFragment : Fragment() {
 
-    private lateinit var binding: FragmentHomeBinding
+    private lateinit var babuHomeBinding: FragmentBabuHomeBinding
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
     ): View? {
-        binding = FragmentHomeBinding.inflate(inflater, container, false)
-        return binding.root
+        babuHomeBinding = FragmentBabuHomeBinding.inflate(inflater, container, false)
+        return babuHomeBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -30,42 +30,41 @@ class HomeFragment : Fragment() {
         //todo home fragment logic
 
         val navHostFragment = childFragmentManager
-            .findFragmentById(R.id.fragment_container_view) as NavHostFragment
+            .findFragmentById(R.id.babu_fragment_container_view) as NavHostFragment
         val navController: NavController = navHostFragment.navController
 
-        binding.bottomNav.navHome.setOnClickListener {
+        babuHomeBinding.babuBottomNav.navHome.setOnClickListener {
             navController.navigate(R.id.matchScheduleFragment)
         }
-        binding.bottomNav.navPredictions.setOnClickListener {
+        babuHomeBinding.babuBottomNav.navPredictions.setOnClickListener {
             navController.navigate(R.id.predictionsFragment)
         }
-        binding.bottomNav.navHistory.setOnClickListener {
+        babuHomeBinding.babuBottomNav.navHistory.setOnClickListener {
             navController.navigate(R.id.predictionHistoryFragment)
         }
-        binding.bottomNav.navStats.setOnClickListener {
+        babuHomeBinding.babuBottomNav.navStats.setOnClickListener {
             navController.navigate(R.id.statsFragment)
         }
-        binding.bottomNav.navBlog.setOnClickListener {
+        babuHomeBinding.babuBottomNav.navBlog.setOnClickListener {
             navController.navigate(R.id.blogFragment)
         }
-        binding.bottomNav.navAchievements.setOnClickListener {
+        babuHomeBinding.babuBottomNav.navAchievements.setOnClickListener {
             navController.navigate(R.id.achievementsFragment)
         }
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             updateSelection(destination.id)
         }
-
     }
 
     private fun updateSelection(id: Int) {
         val map = mapOf(
-            R.id.matchScheduleFragment to binding.bottomNav.navHome,
-            R.id.predictionsFragment to binding.bottomNav.navPredictions,
-            R.id.predictionHistoryFragment to binding.bottomNav.navHistory,
-            R.id.statsFragment to binding.bottomNav.navStats,
-            R.id.blogFragment to binding.bottomNav.navBlog,
-            R.id.achievementsFragment to binding.bottomNav.navAchievements,
+            R.id.matchScheduleFragment to babuHomeBinding.babuBottomNav.navHome,
+            R.id.predictionsFragment to babuHomeBinding.babuBottomNav.navPredictions,
+            R.id.predictionHistoryFragment to babuHomeBinding.babuBottomNav.navHistory,
+            R.id.statsFragment to babuHomeBinding.babuBottomNav.navStats,
+            R.id.blogFragment to babuHomeBinding.babuBottomNav.navBlog,
+            R.id.achievementsFragment to babuHomeBinding.babuBottomNav.navAchievements,
         )
         map.forEach { (dest, view) ->
             view.isSelected = dest == id

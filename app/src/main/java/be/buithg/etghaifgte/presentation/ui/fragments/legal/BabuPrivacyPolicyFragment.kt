@@ -40,8 +40,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import be.buithg.etghaifgte.databinding.FragmentBabuPrivacyPolicyBinding
 import be.buithg.etghaifgte.databinding.NetworkErrorLayoutBinding
-import be.buithg.etghaifgte.presentation.ui.fragments.main.HomeFragment
-import be.buithg.etghaifgte.presentation.ui.fragments.onboarding.WelcomeFragment
+import be.buithg.etghaifgte.presentation.ui.fragments.main.BabuHomeFragment
+import be.buithg.etghaifgte.presentation.ui.fragments.onboarding.BabuWelcomeFragment
 import be.buithg.etghaifgte.utils.BabuAppConstants
 import be.buithg.etghaifgte.utils.BabuAppConstants.getBabuPreferences
 import be.buithg.etghaifgte.utils.BabuAppConstants.showBabuFragment
@@ -73,9 +73,9 @@ class BabuPrivacyPolicyFragment(private val urlOffer: String) : Fragment() {
     private fun navigateToProjectFragment() {
         val launchedBefore = context?.getBabuPreferences()?.getBoolean(BabuAppConstants.BABU_WELCOME_KEY, false) == true
         if (launchedBefore) {
-            parentFragmentManager.showBabuFragment(HomeFragment())
+            parentFragmentManager.showBabuFragment(BabuHomeFragment())
         } else {
-            parentFragmentManager.showBabuFragment(WelcomeFragment())
+            parentFragmentManager.showBabuFragment(BabuWelcomeFragment())
 
         }
     }
