@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.ui.fragments.onboarding.SplashFragment">
+    tools:context=".presentation.ui.fragments.onboarding.StartExampleSampleFragment">
 
     <be.buithg.etghaifgte.presentation.ui.fragments.custom.CustomProgressBar
-        android:id="@+id/progress_bar"
+        android:id="@+id/example_progress_bar"
         android:layout_width="300dp"
         android:layout_height="60dp"
         android:indeterminateTint="@android:color/holo_red_dark"
