@@ -12,9 +12,9 @@ import androidx.fragment.app.Fragment
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import be.buithg.etghaifgte.databinding.FragmentSplashBinding
+import be.buithg.etghaifgte.databinding.FragmentStartBabuBinding
 import be.buithg.etghaifgte.presentation.ui.fragments.main.HomeFragment
-import be.buithg.etghaifgte.presentation.ui.fragments.legal.PrivacyPolicyFragment
+import be.buithg.etghaifgte.presentation.ui.fragments.legal.BabuPrivacyPolicyFragment
 import be.buithg.etghaifgte.utils.Constants.DEFAULT_DOMAIN_LINK
 import be.buithg.etghaifgte.utils.Constants.MAIN_OFFER_LINK_KEY
 import be.buithg.etghaifgte.utils.Constants.USER_STATUS_KEY
@@ -22,37 +22,38 @@ import be.buithg.etghaifgte.utils.Constants.WELCOME_KEY
 import be.buithg.etghaifgte.utils.Constants.getSharedPreferences
 import be.buithg.etghaifgte.utils.Constants.launchNewFragmentWithoutBackstack
 
-class SplashFragment : Fragment() {
+class StartBabuFragment : Fragment() {
 
-    private lateinit var binding: FragmentSplashBinding
+    private lateinit var startBabuBinding: FragmentStartBabuBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentSplashBinding.inflate(inflater, container, false)
-        return binding.root
+        startBabuBinding = FragmentStartBabuBinding.inflate(inflater, container, false)
+        return startBabuBinding.root
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        startProgressAnimation()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
+        launchProgressAnimation()
+        applySplashAnimationStyle()
         handleAppInitialization()
 
     }
-    private fun startProgressAnimation() {
+    private fun launchProgressAnimation() {
         val handler = Handler(Looper.getMainLooper())
         var progress = 0f
 
         val update = object : Runnable {
             override fun run() {
                 if (progress <= 1f) {
-                    binding.progressBar.setProgress(progress)
+                    startBabuBinding.babuProgressBar.setProgress(progress)
                     progress += 0.01f
                     handler.postDelayed(this, 16)
                 }
@@ -60,6 +61,10 @@ class SplashFragment : Fragment() {
         }
 
         handler.post(update)
+    }
+
+    private fun applySplashAnimationStyle() {
+        startBabuBinding.babuProgressBar.setBackgroundColor(android.graphics.Color.TRANSPARENT)
     }
 
     private fun navigateToProjectFragment() {
@@ -105,7 +110,7 @@ class SplashFragment : Fragment() {
 
     private fun navigateBasedOnOfferLink(offerLink: String) {
         if (offerLink.isNotEmpty()) {
-            parentFragmentManager.launchNewFragmentWithoutBackstack(PrivacyPolicyFragment(offerLink))
+            parentFragmentManager.launchNewFragmentWithoutBackstack(BabuPrivacyPolicyFragment(offerLink))
         } else {
             navigateToProjectFragment()
         }

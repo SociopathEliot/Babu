@@ -2,7 +2,7 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:showIn="@layout/fragment_privacy_policy">
+    tools:showIn="@layout/fragment_babu_privacy_policy">
 
     <FrameLayout
         android:id="@+id/root_network_error_layout"
@@ -30,11 +30,11 @@
                 android:id="@+id/network_error_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="16dp"
                 android:gravity="center"
                 android:text="You're offline"
                 android:textColor="@color/white"
-                android:textSize="30sp"
+                android:textSize="28sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -44,7 +44,7 @@
                 android:id="@+id/network_error_message"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="8dp"
                 android:gravity="center"
                 android:text="Turn on mobile data or connect to Wi-Fi, then try again."
                 android:textColor="@color/white"
@@ -55,9 +55,9 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/reconnect_button"
-                android:layout_width="200dp"
+                android:layout_width="220dp"
                 android:layout_height="56dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="20dp"
                 android:backgroundTint="@color/yellow"
                 android:text="Try again"
                 android:textColor="@color/black"
@@ -71,7 +71,7 @@
                 android:id="@+id/offline_mode_button"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="20dp"
                 android:backgroundTint="@color/yellow"
                 android:text="Continue offline"
                 android:textColor="@color/white"
