@@ -15,7 +15,6 @@ import com.android.volley.toolbox.Volley
 import be.buithg.etghaifgte.databinding.FragmentStartBabuBinding
 import be.buithg.etghaifgte.presentation.ui.fragments.main.HomeFragment
 import be.buithg.etghaifgte.presentation.ui.fragments.legal.BabuPrivacyPolicyFragment
-import be.buithg.etghaifgte.utils.Constants.DEFAULT_DOMAIN_LINK
 import be.buithg.etghaifgte.utils.Constants.MAIN_OFFER_LINK_KEY
 import be.buithg.etghaifgte.utils.Constants.USER_STATUS_KEY
 import be.buithg.etghaifgte.utils.Constants.WELCOME_KEY
@@ -35,6 +34,7 @@ class StartBabuFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        launchProgressAnimation()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
