@@ -15,15 +15,15 @@ import dagger.hilt.android.AndroidEntryPoint
 import be.buithg.etghaifgte.databinding.FragmentAchievementsBinding
 import be.buithg.etghaifgte.data.local.entity.PredictionEntity
 import be.buithg.etghaifgte.presentation.viewmodel.PredictionsViewModel
-import be.buithg.etghaifgte.utils.Constants.ACHIEVEMENTS_COUNT_KEY
-import be.buithg.etghaifgte.utils.Constants.ACHIEVEMENT_FIRSTWIN_CLAIMED_KEY
-import be.buithg.etghaifgte.utils.Constants.ACHIEVEMENT_FIRST_WIN_KEY
-import be.buithg.etghaifgte.utils.Constants.ACHIEVEMENT_STREAK_CLAIMED_KEY
-import be.buithg.etghaifgte.utils.Constants.ACHIEVEMENT_STREAK_KEY
-import be.buithg.etghaifgte.utils.Constants.ACHIEVEMENT_TOURNAMENT_CLAIMED_KEY
-import be.buithg.etghaifgte.utils.Constants.ACHIEVEMENT_TOURNAMENT_KEY
-import be.buithg.etghaifgte.utils.Constants.LEVEL_KEY
-import be.buithg.etghaifgte.utils.Constants.getSharedPreferences
+import be.buithg.etghaifgte.utils.BabuAppConstants.BABU_ACHIEVEMENTS_COUNT_KEY
+import be.buithg.etghaifgte.utils.BabuAppConstants.BABU_ACHIEVEMENT_FIRSTWIN_CLAIMED_KEY
+import be.buithg.etghaifgte.utils.BabuAppConstants.BABU_ACHIEVEMENT_FIRST_WIN_KEY
+import be.buithg.etghaifgte.utils.BabuAppConstants.BABU_ACHIEVEMENT_STREAK_CLAIMED_KEY
+import be.buithg.etghaifgte.utils.BabuAppConstants.BABU_ACHIEVEMENT_STREAK_KEY
+import be.buithg.etghaifgte.utils.BabuAppConstants.BABU_ACHIEVEMENT_TOURNAMENT_CLAIMED_KEY
+import be.buithg.etghaifgte.utils.BabuAppConstants.BABU_ACHIEVEMENT_TOURNAMENT_KEY
+import be.buithg.etghaifgte.utils.BabuAppConstants.BABU_LEVEL_KEY
+import be.buithg.etghaifgte.utils.BabuAppConstants.getBabuPreferences
 
 @AndroidEntryPoint
 class AchievementsFragment : Fragment() {
@@ -39,11 +39,11 @@ class AchievementsFragment : Fragment() {
     }
 
     private fun increaseLevel() {
-        val prefs = context?.getSharedPreferences() ?: return
-        var level = prefs.getInt(LEVEL_KEY, 0)
+        val prefs = context?.getBabuPreferences() ?: return
+        var level = prefs.getInt(BABU_LEVEL_KEY, 0)
         if (level < levels.lastIndex) {
             level++
-            prefs.edit { putInt(LEVEL_KEY, level) }
+            prefs.edit { putInt(BABU_LEVEL_KEY, level) }
             updateLevelUI(level)
         }
     }
@@ -52,14 +52,14 @@ class AchievementsFragment : Fragment() {
         Toast.makeText(context, "You have reached a new level.", Toast.LENGTH_SHORT).show()
     }
     private fun canClaim(progress: Int, completedKey: String, claimedKey: String): Boolean {
-        val prefs = context?.getSharedPreferences() ?: return false
+        val prefs = context?.getBabuPreferences() ?: return false
         val completed = prefs.getBoolean(completedKey, false)
         val claimed   = prefs.getBoolean(claimedKey,   false)
         return completed && progress >= 100 && !claimed
     }
 
     private fun showClaimError(progress: Int, completedKey: String, claimedKey: String) {
-        val prefs = context?.getSharedPreferences() ?: return
+        val prefs = context?.getBabuPreferences() ?: return
         val claimed = prefs.getBoolean(claimedKey, false)
         val completed = prefs.getBoolean(completedKey, false)
         val message = if (claimed) {
@@ -99,66 +99,66 @@ class AchievementsFragment : Fragment() {
             findNavController().navigate(R.id.tutorialFragment)
         }
 
-        val prefs = context?.getSharedPreferences()
-        val level = prefs?.getInt(LEVEL_KEY, 0) ?: 0
+        val prefs = context?.getBabuPreferences()
+        val level = prefs?.getInt(BABU_LEVEL_KEY, 0) ?: 0
         updateLevelUI(level)
         binding.btnClaimReward.setOnClickListener {
-            val prefs = requireContext().getSharedPreferences()
+            val prefs = requireContext().getBabuPreferences()
             if (canClaim(
                     binding.progressIndicator.progress,
-                    ACHIEVEMENT_STREAK_KEY,
-                    ACHIEVEMENT_STREAK_CLAIMED_KEY)) {
+                    BABU_ACHIEVEMENT_STREAK_KEY,
+                    BABU_ACHIEVEMENT_STREAK_CLAIMED_KEY)) {
                 increaseLevel()
                 showLevelUpMessage()
                 prefs.edit {
-                    putBoolean(ACHIEVEMENT_STREAK_CLAIMED_KEY, true)
+                    putBoolean(BABU_ACHIEVEMENT_STREAK_CLAIMED_KEY, true)
                 }
                 binding.btnClaimReward.isEnabled = false
             } else {
                 showClaimError(
                     binding.progressIndicator.progress,
-                    ACHIEVEMENT_STREAK_KEY,
-                    ACHIEVEMENT_STREAK_CLAIMED_KEY
+                    BABU_ACHIEVEMENT_STREAK_KEY,
+                    BABU_ACHIEVEMENT_STREAK_CLAIMED_KEY
                 )
             }
         }
         binding.btnClaimReward2.setOnClickListener {
-            val prefs = requireContext().getSharedPreferences()
+            val prefs = requireContext().getBabuPreferences()
             if (canClaim(
                     binding.progressIndicator2.progress,
-                    ACHIEVEMENT_TOURNAMENT_KEY,
-                    ACHIEVEMENT_TOURNAMENT_CLAIMED_KEY)) {
+                    BABU_ACHIEVEMENT_TOURNAMENT_KEY,
+                    BABU_ACHIEVEMENT_TOURNAMENT_CLAIMED_KEY)) {
                 increaseLevel()
                 showLevelUpMessage()
                 prefs.edit {
-                    putBoolean(ACHIEVEMENT_TOURNAMENT_CLAIMED_KEY, true)
+                    putBoolean(BABU_ACHIEVEMENT_TOURNAMENT_CLAIMED_KEY, true)
                 }
                 binding.btnClaimReward2.isEnabled = false
             } else {
                 showClaimError(
                     binding.progressIndicator2.progress,
-                    ACHIEVEMENT_TOURNAMENT_KEY,
-                    ACHIEVEMENT_TOURNAMENT_CLAIMED_KEY
+                    BABU_ACHIEVEMENT_TOURNAMENT_KEY,
+                    BABU_ACHIEVEMENT_TOURNAMENT_CLAIMED_KEY
                 )
             }
         }
         binding.btnClaimReward3.setOnClickListener {
-            val prefs = requireContext().getSharedPreferences()
+            val prefs = requireContext().getBabuPreferences()
             if (canClaim(
                     binding.progressIndicator3.progress,
-                    ACHIEVEMENT_FIRST_WIN_KEY,
-                    ACHIEVEMENT_FIRSTWIN_CLAIMED_KEY)) {
+                    BABU_ACHIEVEMENT_FIRST_WIN_KEY,
+                    BABU_ACHIEVEMENT_FIRSTWIN_CLAIMED_KEY)) {
                 increaseLevel()
                 showLevelUpMessage()
                 prefs.edit {
-                    putBoolean(ACHIEVEMENT_FIRSTWIN_CLAIMED_KEY, true)
+                    putBoolean(BABU_ACHIEVEMENT_FIRSTWIN_CLAIMED_KEY, true)
                 }
                 binding.btnClaimReward3.isEnabled = false
             } else {
                 showClaimError(
                     binding.progressIndicator3.progress,
-                    ACHIEVEMENT_FIRST_WIN_KEY,
-                    ACHIEVEMENT_FIRSTWIN_CLAIMED_KEY
+                    BABU_ACHIEVEMENT_FIRST_WIN_KEY,
+                    BABU_ACHIEVEMENT_FIRSTWIN_CLAIMED_KEY
                 )
             }
         }
@@ -170,16 +170,16 @@ class AchievementsFragment : Fragment() {
     }
 
     private fun updateAchievements(list: List<PredictionEntity>) {
-        val prefs = context?.getSharedPreferences() ?: return
-        var achievements = prefs.getInt(ACHIEVEMENTS_COUNT_KEY, 0)
+        val prefs = context?.getBabuPreferences() ?: return
+        var achievements = prefs.getInt(BABU_ACHIEVEMENTS_COUNT_KEY, 0)
 
         val madePrediction = list.isNotEmpty()
-        val tournamentDone = prefs.getBoolean(ACHIEVEMENT_TOURNAMENT_KEY, false)
+        val tournamentDone = prefs.getBoolean(BABU_ACHIEVEMENT_TOURNAMENT_KEY, false)
         if (madePrediction && !tournamentDone) {
             achievements++
             prefs.edit {
-                putBoolean(ACHIEVEMENT_TOURNAMENT_KEY, true)
-                putInt(ACHIEVEMENTS_COUNT_KEY, achievements)
+                putBoolean(BABU_ACHIEVEMENT_TOURNAMENT_KEY, true)
+                putInt(BABU_ACHIEVEMENTS_COUNT_KEY, achievements)
             }
         }
         val progressTournament = if (madePrediction) 100 else 0
@@ -187,12 +187,12 @@ class AchievementsFragment : Fragment() {
         binding.textPercent2.text = "$progressTournament % completed"
 
         val winExists = list.any { isWin(it) }
-        val firstWinDone = prefs.getBoolean(ACHIEVEMENT_FIRST_WIN_KEY, false)
+        val firstWinDone = prefs.getBoolean(BABU_ACHIEVEMENT_FIRST_WIN_KEY, false)
         if (winExists && !firstWinDone) {
             achievements++
             prefs.edit {
-                putBoolean(ACHIEVEMENT_FIRST_WIN_KEY, true)
-                putInt(ACHIEVEMENTS_COUNT_KEY, achievements)
+                putBoolean(BABU_ACHIEVEMENT_FIRST_WIN_KEY, true)
+                putInt(BABU_ACHIEVEMENTS_COUNT_KEY, achievements)
             }
         }
         val progressWin = if (winExists) 100 else 0
@@ -218,7 +218,7 @@ class AchievementsFragment : Fragment() {
             achievements++
             prefs.edit {
                 putBoolean(ACHIEVEMENT_STREAK_KEY, true)
-                putInt(ACHIEVEMENTS_COUNT_KEY, achievements)
+                putInt(BABU_ACHIEVEMENTS_COUNT_KEY, achievements)
             }
         }
 

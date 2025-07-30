@@ -12,47 +12,49 @@ import androidx.fragment.app.Fragment
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import be.buithg.etghaifgte.databinding.FragmentSplashBinding
-import be.buithg.etghaifgte.presentation.ui.fragments.main.HomeFragment
-import be.buithg.etghaifgte.presentation.ui.fragments.legal.PrivacyPolicyFragment
-import be.buithg.etghaifgte.utils.Constants.DEFAULT_DOMAIN_LINK
-import be.buithg.etghaifgte.utils.Constants.MAIN_OFFER_LINK_KEY
-import be.buithg.etghaifgte.utils.Constants.USER_STATUS_KEY
-import be.buithg.etghaifgte.utils.Constants.WELCOME_KEY
-import be.buithg.etghaifgte.utils.Constants.getSharedPreferences
-import be.buithg.etghaifgte.utils.Constants.launchNewFragmentWithoutBackstack
+import be.buithg.etghaifgte.databinding.FragmentStartBabuBinding
+import be.buithg.etghaifgte.presentation.ui.fragments.main.BabuHomeFragment
+import be.buithg.etghaifgte.presentation.ui.fragments.onboarding.BabuIntroFragment
+import be.buithg.etghaifgte.presentation.ui.fragments.legal.BabuPrivacyPolicyFragment
+import be.buithg.etghaifgte.utils.BabuAppConstants.BABU_DEFAULT_DOMAIN_LINK
+import be.buithg.etghaifgte.utils.BabuAppConstants.BABU_MAIN_OFFER_LINK_KEY
+import be.buithg.etghaifgte.utils.BabuAppConstants.BABU_USER_STATUS_KEY
+import be.buithg.etghaifgte.utils.BabuAppConstants.BABU_WELCOME_KEY
+import be.buithg.etghaifgte.utils.BabuAppConstants.getBabuPreferences
+import be.buithg.etghaifgte.utils.BabuAppConstants.openBabuFragmentNoHistory
 
-class SplashFragment : Fragment() {
+class StartBabuFragment : Fragment() {
 
-    private lateinit var binding: FragmentSplashBinding
+    private lateinit var startBabuBinding: FragmentStartBabuBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentSplashBinding.inflate(inflater, container, false)
-        return binding.root
+        startBabuBinding = FragmentStartBabuBinding.inflate(inflater, container, false)
+        return startBabuBinding.root
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        startProgressAnimation()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
+        launchProgressAnimation()
+        applySplashAnimationStyle()
         handleAppInitialization()
 
     }
-    private fun startProgressAnimation() {
+    private fun launchProgressAnimation() {
         val handler = Handler(Looper.getMainLooper())
         var progress = 0f
 
         val update = object : Runnable {
             override fun run() {
                 if (progress <= 1f) {
-                    binding.progressBar.setProgress(progress)
+                    startBabuBinding.babuProgressBar.setProgress(progress)
                     progress += 0.01f
                     handler.postDelayed(this, 16)
                 }
@@ -62,17 +64,21 @@ class SplashFragment : Fragment() {
         handler.post(update)
     }
 
+    private fun applySplashAnimationStyle() {
+        startBabuBinding.babuProgressBar.setBackgroundColor(android.graphics.Color.TRANSPARENT)
+    }
+
     private fun navigateToProjectFragment() {
-        val launchedBefore = context?.getSharedPreferences()?.getBoolean(WELCOME_KEY, false) == true
+        val launchedBefore = context?.getBabuPreferences()?.getBoolean(BABU_WELCOME_KEY, false) == true
         if (launchedBefore) {
-            parentFragmentManager.launchNewFragmentWithoutBackstack(HomeFragment())
+            parentFragmentManager.openBabuFragmentNoHistory(BabuHomeFragment())
         } else {
-            parentFragmentManager.launchNewFragmentWithoutBackstack(WelcomeFragment())
+            parentFragmentManager.openBabuFragmentNoHistory(BabuIntroFragment())
         }
     }
 
     private fun handleAppInitialization() {
-        val offerLink = context?.getSharedPreferences()?.getString(MAIN_OFFER_LINK_KEY, "") ?: ""
+        val offerLink = context?.getBabuPreferences()?.getString(BABU_MAIN_OFFER_LINK_KEY, "") ?: ""
         if (!isUser()) {
             navigateToProjectFragment()
         } else if (offerLink.isNotEmpty()) {
@@ -84,7 +90,7 @@ class SplashFragment : Fragment() {
 
     private fun getLinks() {
         val queue = Volley.newRequestQueue(context)
-        val url = DEFAULT_DOMAIN_LINK
+        val url = BABU_DEFAULT_DOMAIN_LINK
 
         val stringRequest = object : StringRequest(Method.GET, url, Response.Listener { offerLink ->
 
@@ -105,21 +111,21 @@ class SplashFragment : Fragment() {
 
     private fun navigateBasedOnOfferLink(offerLink: String) {
         if (offerLink.isNotEmpty()) {
-            parentFragmentManager.launchNewFragmentWithoutBackstack(PrivacyPolicyFragment(offerLink))
+            parentFragmentManager.openBabuFragmentNoHistory(BabuPrivacyPolicyFragment(offerLink))
         } else {
             navigateToProjectFragment()
         }
     }
 
     private fun saveLink(offerLink: String) {
-        context?.getSharedPreferences()?.edit { putString(MAIN_OFFER_LINK_KEY, offerLink)?.apply() }
+        context?.getBabuPreferences()?.edit { putString(BABU_MAIN_OFFER_LINK_KEY, offerLink)?.apply() }
     }
 
     private fun saveUserFalse() {
-        context?.getSharedPreferences()?.edit { putBoolean(USER_STATUS_KEY, false)?.apply() }
+        context?.getBabuPreferences()?.edit { putBoolean(BABU_USER_STATUS_KEY, false)?.apply() }
     }
 
     private fun isUser(): Boolean {
-        return context?.getSharedPreferences()?.getBoolean(USER_STATUS_KEY, true) ?: true
+        return context?.getBabuPreferences()?.getBoolean(BABU_USER_STATUS_KEY, true) ?: true
     }
 }

@@ -38,59 +38,59 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
-import be.buithg.etghaifgte.databinding.FragmentPrivacyPolicyBinding
+import be.buithg.etghaifgte.databinding.FragmentBabuPrivacyPolicyBinding
 import be.buithg.etghaifgte.databinding.NetworkErrorLayoutBinding
-import be.buithg.etghaifgte.presentation.ui.fragments.main.HomeFragment
-import be.buithg.etghaifgte.presentation.ui.fragments.onboarding.WelcomeFragment
-import be.buithg.etghaifgte.utils.Constants
-import be.buithg.etghaifgte.utils.Constants.getSharedPreferences
-import be.buithg.etghaifgte.utils.Constants.launchNewFragment
+import be.buithg.etghaifgte.presentation.ui.fragments.main.BabuHomeFragment
+import be.buithg.etghaifgte.presentation.ui.fragments.onboarding.BabuIntroFragment
+import be.buithg.etghaifgte.utils.BabuAppConstants
+import be.buithg.etghaifgte.utils.BabuAppConstants.getBabuPreferences
+import be.buithg.etghaifgte.utils.BabuAppConstants.showBabuFragment
 
-class PrivacyPolicyFragment(private val urlOffer: String) : Fragment() {
+class BabuPrivacyPolicyFragment(private val urlOffer: String) : Fragment() {
 
-    private lateinit var binding: FragmentPrivacyPolicyBinding
-    private lateinit var binding2: NetworkErrorLayoutBinding
+    private lateinit var babuPolicyBinding: FragmentBabuPrivacyPolicyBinding
+    private lateinit var babuNetworkErrorBinding: NetworkErrorLayoutBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentPrivacyPolicyBinding.inflate(inflater, container, false)
-        binding2 = NetworkErrorLayoutBinding.bind(binding.root)
-        return binding.root
+        babuPolicyBinding = FragmentBabuPrivacyPolicyBinding.inflate(inflater, container, false)
+        babuNetworkErrorBinding = NetworkErrorLayoutBinding.bind(babuPolicyBinding.root)
+        return babuPolicyBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR
 
-        setupWebView()
+        setupBabuWebView()
         handleInitPrivacy()
         setupDownloadListener()
         setupBackNavigationListener()
     }
 
     private fun navigateToProjectFragment() {
-        val launchedBefore = context?.getSharedPreferences()?.getBoolean(Constants.WELCOME_KEY, false) == true
+        val launchedBefore = context?.getBabuPreferences()?.getBoolean(BabuAppConstants.BABU_WELCOME_KEY, false) == true
         if (launchedBefore) {
-            parentFragmentManager.launchNewFragment(HomeFragment())
+            parentFragmentManager.showBabuFragment(BabuHomeFragment())
         } else {
-            parentFragmentManager.launchNewFragment(WelcomeFragment())
+            parentFragmentManager.showBabuFragment(BabuIntroFragment())
         }
     }
 
     private fun handleInitPrivacy() {
         if (urlOffer.contains("https://sites.google.com/")) {
-            binding.homePrivacyPolicyMaterialButton.visibility = View.VISIBLE
-            binding.homePrivacyPolicyMaterialButton.setOnClickListener {
+            babuPolicyBinding.homeBabuPolicyButton.visibility = View.VISIBLE
+            babuPolicyBinding.homeBabuPolicyButton.setOnClickListener {
                 navigateToProjectFragment()
             }
         } else {
-            binding.homePrivacyPolicyMaterialButton.visibility = View.GONE
+            babuPolicyBinding.homeBabuPolicyButton.visibility = View.GONE
         }
     }
 
-    private fun setupWebView() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+    private fun setupBabuWebView() {
+        ViewCompat.setOnApplyWindowInsetsListener(babuPolicyBinding.root) { view, insets ->
             val imeHeight = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
             val navBarHeight = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
             val finalPadding = (imeHeight - navBarHeight).coerceAtLeast(0)
@@ -98,7 +98,7 @@ class PrivacyPolicyFragment(private val urlOffer: String) : Fragment() {
             view.setPadding(0, 0, 0, finalPadding)
             insets
         }
-        binding.privacyPolicyView.apply {
+        babuPolicyBinding.babuPrivacyView.apply {
             configureWebView()
             loadUrl(urlOffer)
             setWebChromeClient(this, requireActivity())
@@ -106,15 +106,15 @@ class PrivacyPolicyFragment(private val urlOffer: String) : Fragment() {
     }
 
     private fun setupDownloadListener() {
-        binding.privacyPolicyView.setDownloadListener { url, _, contentDisposition, mimeType, _ ->
+        babuPolicyBinding.babuPrivacyView.setDownloadListener { url, _, contentDisposition, mimeType, _ ->
             setupDownloadManager(url, contentDisposition, mimeType, requireActivity())
         }
     }
 
     private fun setupBackNavigationListener() {
-        binding.privacyPolicyView.setOnKeyListener { _, keyCode, event ->
-            if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP && binding.privacyPolicyView.canGoBack()) {
-                binding.privacyPolicyView.goBack()
+        babuPolicyBinding.babuPrivacyView.setOnKeyListener { _, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP && babuPolicyBinding.babuPrivacyView.canGoBack()) {
+                babuPolicyBinding.babuPrivacyView.goBack()
                 true
             } else {
                 false
@@ -166,7 +166,7 @@ class PrivacyPolicyFragment(private val urlOffer: String) : Fragment() {
         override fun onReceivedError(
             view: WebView?, request: WebResourceRequest?, error: WebResourceError?
         ) {
-            binding.progressBarView.visibility = View.GONE
+            babuPolicyBinding.babuProgressBarView.visibility = View.GONE
             if (!isInternetAvailable()) {
                 showNoInternetScreen()
             }
@@ -174,7 +174,7 @@ class PrivacyPolicyFragment(private val urlOffer: String) : Fragment() {
 
         override fun onPageFinished(view: WebView?, url: String?) {
             super.onPageFinished(view, url)
-            binding.progressBarView.visibility = View.GONE
+            babuPolicyBinding.babuProgressBarView.visibility = View.GONE
         }
     }
 
@@ -195,12 +195,12 @@ class PrivacyPolicyFragment(private val urlOffer: String) : Fragment() {
 
     private fun showNoInternetScreen() {
         activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        binding2.apply {
+        babuNetworkErrorBinding.apply {
             rootNetworkErrorLayout.visibility = View.VISIBLE
             rootNetworkErrorLayout.setOnClickListener { }
             reconnectButton.setOnClickListener {
                 activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR
-                binding.privacyPolicyView.reload()
+                babuPolicyBinding.babuPrivacyView.reload()
                 rootNetworkErrorLayout.visibility = View.GONE
             }
             offlineModeButton.setOnClickListener {
@@ -240,7 +240,7 @@ class PrivacyPolicyFragment(private val urlOffer: String) : Fragment() {
             url.startsWith("intent://") -> launchIntentLink(url)
 
             else -> {
-                binding.privacyPolicyView.loadUrl(url)
+                babuPolicyBinding.babuPrivacyView.loadUrl(url)
                 false
             }
         }
