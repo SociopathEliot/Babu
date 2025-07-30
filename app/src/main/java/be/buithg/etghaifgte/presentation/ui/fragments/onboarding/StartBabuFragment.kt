@@ -36,7 +36,6 @@ class StartBabuFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         launchProgressAnimation()
-        applySplashAnimationStyle()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
