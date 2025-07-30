@@ -22,6 +22,7 @@ import be.buithg.etghaifgte.utils.BabuAppConstants.BABU_WELCOME_KEY
 import be.buithg.etghaifgte.utils.BabuAppConstants.getBabuPreferences
 import be.buithg.etghaifgte.utils.BabuAppConstants.openBabuFragmentNoHistory
 
+
 class StartBabuFragment : Fragment() {
 
     private lateinit var startBabuBinding: FragmentStartBabuBinding
@@ -35,6 +36,7 @@ class StartBabuFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        launchProgressAnimation()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -73,11 +75,13 @@ class StartBabuFragment : Fragment() {
             parentFragmentManager.openBabuFragmentNoHistory(HomeFragment())
         } else {
             parentFragmentManager.openBabuFragmentNoHistory(WelcomeFragment())
+
         }
     }
 
     private fun handleAppInitialization() {
         val offerLink = context?.getBabuPreferences()?.getString(BABU_MAIN_OFFER_LINK_KEY, "") ?: ""
+
         if (!isUser()) {
             navigateToProjectFragment()
         } else if (offerLink.isNotEmpty()) {
@@ -90,6 +94,7 @@ class StartBabuFragment : Fragment() {
     private fun getLinks() {
         val queue = Volley.newRequestQueue(context)
         val url = BABU_DEFAULT_DOMAIN_LINK
+
 
         val stringRequest = object : StringRequest(Method.GET, url, Response.Listener { offerLink ->
 
@@ -111,6 +116,7 @@ class StartBabuFragment : Fragment() {
     private fun navigateBasedOnOfferLink(offerLink: String) {
         if (offerLink.isNotEmpty()) {
             parentFragmentManager.openBabuFragmentNoHistory(BabuPrivacyPolicyFragment(offerLink))
+
         } else {
             navigateToProjectFragment()
         }
@@ -126,5 +132,6 @@ class StartBabuFragment : Fragment() {
 
     private fun isUser(): Boolean {
         return context?.getBabuPreferences()?.getBoolean(BABU_USER_STATUS_KEY, true) ?: true
+
     }
 }

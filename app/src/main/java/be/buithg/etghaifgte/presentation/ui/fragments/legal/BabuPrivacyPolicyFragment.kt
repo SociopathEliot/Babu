@@ -46,6 +46,7 @@ import be.buithg.etghaifgte.utils.BabuAppConstants
 import be.buithg.etghaifgte.utils.BabuAppConstants.getBabuPreferences
 import be.buithg.etghaifgte.utils.BabuAppConstants.showBabuFragment
 
+
 class BabuPrivacyPolicyFragment(private val urlOffer: String) : Fragment() {
 
     private lateinit var babuPolicyBinding: FragmentBabuPrivacyPolicyBinding
@@ -75,6 +76,7 @@ class BabuPrivacyPolicyFragment(private val urlOffer: String) : Fragment() {
             parentFragmentManager.showBabuFragment(HomeFragment())
         } else {
             parentFragmentManager.showBabuFragment(WelcomeFragment())
+
         }
     }
 
