@@ -42,9 +42,10 @@ import be.buithg.etghaifgte.databinding.FragmentBabuPrivacyPolicyBinding
 import be.buithg.etghaifgte.databinding.NetworkErrorLayoutBinding
 import be.buithg.etghaifgte.presentation.ui.fragments.main.HomeFragment
 import be.buithg.etghaifgte.presentation.ui.fragments.onboarding.WelcomeFragment
-import be.buithg.etghaifgte.utils.Constants
-import be.buithg.etghaifgte.utils.Constants.getSharedPreferences
-import be.buithg.etghaifgte.utils.Constants.launchNewFragment
+import be.buithg.etghaifgte.utils.BabuAppConstants
+import be.buithg.etghaifgte.utils.BabuAppConstants.getBabuPreferences
+import be.buithg.etghaifgte.utils.BabuAppConstants.showBabuFragment
+
 
 class BabuPrivacyPolicyFragment(private val urlOffer: String) : Fragment() {
 
@@ -70,11 +71,12 @@ class BabuPrivacyPolicyFragment(private val urlOffer: String) : Fragment() {
     }
 
     private fun navigateToProjectFragment() {
-        val launchedBefore = context?.getSharedPreferences()?.getBoolean(Constants.WELCOME_KEY, false) == true
+        val launchedBefore = context?.getBabuPreferences()?.getBoolean(BabuAppConstants.BABU_WELCOME_KEY, false) == true
         if (launchedBefore) {
-            parentFragmentManager.launchNewFragment(HomeFragment())
+            parentFragmentManager.showBabuFragment(HomeFragment())
         } else {
-            parentFragmentManager.launchNewFragment(WelcomeFragment())
+            parentFragmentManager.showBabuFragment(WelcomeFragment())
+
         }
     }
 

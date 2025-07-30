@@ -9,9 +9,9 @@ import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import be.buithg.etghaifgte.databinding.FragmentWelcomeBinding
 import be.buithg.etghaifgte.presentation.ui.fragments.main.HomeFragment
-import be.buithg.etghaifgte.utils.Constants.WELCOME_KEY
-import be.buithg.etghaifgte.utils.Constants.getSharedPreferences
-import be.buithg.etghaifgte.utils.Constants.launchNewFragmentWithoutBackstack
+import be.buithg.etghaifgte.utils.BabuAppConstants.BABU_WELCOME_KEY
+import be.buithg.etghaifgte.utils.BabuAppConstants.getBabuPreferences
+import be.buithg.etghaifgte.utils.BabuAppConstants.openBabuFragmentNoHistory
 
 class WelcomeFragment : Fragment() {
 
@@ -28,8 +28,8 @@ class WelcomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         binding.nextMaterialButton.setOnClickListener {
-            context?.getSharedPreferences()?.edit { putBoolean(WELCOME_KEY, true).apply() }
-            parentFragmentManager.launchNewFragmentWithoutBackstack(HomeFragment())
+            context?.getBabuPreferences()?.edit { putBoolean(BABU_WELCOME_KEY, true).apply() }
+            parentFragmentManager.openBabuFragmentNoHistory(HomeFragment())
         }
     }
 }
