@@ -14,8 +14,7 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import be.buithg.etghaifgte.databinding.FragmentStartBabuBinding
 import be.buithg.etghaifgte.presentation.ui.fragments.main.HomeFragment
-import be.buithg.etghaifgte.presentation.ui.fragments.legal.PrivacyPolicyFragment
-import be.buithg.etghaifgte.utils.Constants.DEFAULT_DOMAIN_LINK
+import be.buithg.etghaifgte.presentation.ui.fragments.legal.BabuPrivacyPolicyFragment
 import be.buithg.etghaifgte.utils.Constants.MAIN_OFFER_LINK_KEY
 import be.buithg.etghaifgte.utils.Constants.USER_STATUS_KEY
 import be.buithg.etghaifgte.utils.Constants.WELCOME_KEY
@@ -42,6 +41,8 @@ class StartBabuFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
+        launchProgressAnimation()
+        applySplashAnimationStyle()
         handleAppInitialization()
 
     }
@@ -109,7 +110,7 @@ class StartBabuFragment : Fragment() {
 
     private fun navigateBasedOnOfferLink(offerLink: String) {
         if (offerLink.isNotEmpty()) {
-            parentFragmentManager.launchNewFragmentWithoutBackstack(PrivacyPolicyFragment(offerLink))
+            parentFragmentManager.launchNewFragmentWithoutBackstack(BabuPrivacyPolicyFragment(offerLink))
         } else {
             navigateToProjectFragment()
         }

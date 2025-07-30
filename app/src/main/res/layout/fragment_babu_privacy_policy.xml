@@ -4,17 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.ui.fragments.legal.PrivacyPolicyFragment">
+    tools:context=".presentation.ui.fragments.legal.BabuPrivacyPolicyFragment">
 
     <WebView
-        android:id="@+id/privacy_policy_view"
+        android:id="@+id/babu_privacy_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
     <ProgressBar
-        android:id="@+id/progress_bar_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/babu_progress_bar_view"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
         android:indeterminateTint="@android:color/holo_red_dark"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -22,14 +22,14 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/home_privacy_policy_material_button"
-        android:layout_width="140dp"
-        android:layout_height="55dp"
-        android:layout_marginBottom="16dp"
+        android:id="@+id/home_babu_policy_button"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="24dp"
         android:backgroundTint="@android:color/holo_red_dark"
         android:text="Home"
         android:textColor="@color/white"
-        android:textSize="24sp"
+        android:textSize="20sp"
         android:textStyle="bold"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
