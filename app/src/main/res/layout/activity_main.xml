@@ -9,7 +9,7 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/navHostFragment"
-        android:name="be.buithg.etghaifgte.presentation.ui.fragments.onboarding.SplashFragment"
+        android:name="be.buithg.etghaifgte.presentation.ui.fragments.onboarding.StartExampleSampleFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:defaultNavHost="true"
