@@ -37,7 +37,7 @@ object BabuAppConstants {
     }
     fun FragmentManager.displayBabuFragmentNew(fragment: Fragment) {
         this.beginTransaction().apply {
-            replace(R.id.fragment_container_view, fragment)
+            replace(R.id.babu_fragment_container_view, fragment)
             addToBackStack(null)
             commit()
         }
