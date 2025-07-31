@@ -13,7 +13,8 @@ import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import be.buithg.etghaifgte.databinding.FragmentStartBabuBinding
-import be.buithg.etghaifgte.presentation.ui.fragments.main.HomeFragment
+import be.buithg.etghaifgte.presentation.ui.fragments.main.BabuHomeFragment
+import be.buithg.etghaifgte.presentation.ui.fragments.onboarding.BabuWelcomeFragment
 import be.buithg.etghaifgte.presentation.ui.fragments.legal.BabuPrivacyPolicyFragment
 import be.buithg.etghaifgte.utils.BabuAppConstants.BABU_DEFAULT_DOMAIN_LINK
 import be.buithg.etghaifgte.utils.BabuAppConstants.BABU_MAIN_OFFER_LINK_KEY
@@ -72,9 +73,9 @@ class StartBabuFragment : Fragment() {
     private fun navigateToProjectFragment() {
         val launchedBefore = context?.getBabuPreferences()?.getBoolean(BABU_WELCOME_KEY, false) == true
         if (launchedBefore) {
-            parentFragmentManager.openBabuFragmentNoHistory(HomeFragment())
+            parentFragmentManager.openBabuFragmentNoHistory(BabuHomeFragment())
         } else {
-            parentFragmentManager.openBabuFragmentNoHistory(WelcomeFragment())
+            parentFragmentManager.openBabuFragmentNoHistory(BabuWelcomeFragment())
 
         }
     }
