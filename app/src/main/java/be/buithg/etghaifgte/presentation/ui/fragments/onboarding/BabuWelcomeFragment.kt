@@ -22,12 +22,14 @@ class BabuWelcomeFragment : Fragment() {
     ): View? {
         binding = FragmentBabuWelcomeBinding.inflate(inflater, container, false)
         return binding.root
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         binding.babuNextMaterialButton.setOnClickListener {
+
             context?.getBabuPreferences()?.edit { putBoolean(BABU_WELCOME_KEY, true).apply() }
             parentFragmentManager.openBabuFragmentNoHistory(BabuHomeFragment())
         }

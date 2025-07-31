@@ -49,6 +49,7 @@ class BabuHomeFragment : Fragment() {
             navController.navigate(R.id.blogFragment)
         }
         binding.babuBottomNav.navAchievements.setOnClickListener {
+
             navController.navigate(R.id.achievementsFragment)
         }
 
