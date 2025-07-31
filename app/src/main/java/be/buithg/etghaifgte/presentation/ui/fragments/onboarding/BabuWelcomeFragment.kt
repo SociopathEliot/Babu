@@ -15,19 +15,21 @@ import be.buithg.etghaifgte.utils.BabuAppConstants.openBabuFragmentNoHistory
 
 class BabuWelcomeFragment : Fragment() {
 
-    private lateinit var babuWelcomeBinding: FragmentBabuWelcomeBinding
+    private lateinit var binding: FragmentBabuWelcomeBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
     ): View? {
-        babuWelcomeBinding = FragmentBabuWelcomeBinding.inflate(inflater, container, false)
-        return babuWelcomeBinding.root
+        binding = FragmentBabuWelcomeBinding.inflate(inflater, container, false)
+        return binding.root
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        babuWelcomeBinding.babuNextMaterialButton.setOnClickListener {
+        binding.babuNextMaterialButton.setOnClickListener {
+
             context?.getBabuPreferences()?.edit { putBoolean(BABU_WELCOME_KEY, true).apply() }
             parentFragmentManager.openBabuFragmentNoHistory(BabuHomeFragment())
         }

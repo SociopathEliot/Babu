@@ -15,13 +15,13 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class BabuHomeFragment : Fragment() {
 
-    private lateinit var babuHomeBinding: FragmentBabuHomeBinding
+    private lateinit var binding: FragmentBabuHomeBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
     ): View? {
-        babuHomeBinding = FragmentBabuHomeBinding.inflate(inflater, container, false)
-        return babuHomeBinding.root
+        binding = FragmentBabuHomeBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -33,22 +33,23 @@ class BabuHomeFragment : Fragment() {
             .findFragmentById(R.id.babu_fragment_container_view) as NavHostFragment
         val navController: NavController = navHostFragment.navController
 
-        babuHomeBinding.babuBottomNav.navHome.setOnClickListener {
+        binding.babuBottomNav.navHome.setOnClickListener {
             navController.navigate(R.id.matchScheduleFragment)
         }
-        babuHomeBinding.babuBottomNav.navPredictions.setOnClickListener {
+        binding.babuBottomNav.navPredictions.setOnClickListener {
             navController.navigate(R.id.predictionsFragment)
         }
-        babuHomeBinding.babuBottomNav.navHistory.setOnClickListener {
+        binding.babuBottomNav.navHistory.setOnClickListener {
             navController.navigate(R.id.predictionHistoryFragment)
         }
-        babuHomeBinding.babuBottomNav.navStats.setOnClickListener {
+        binding.babuBottomNav.navStats.setOnClickListener {
             navController.navigate(R.id.statsFragment)
         }
-        babuHomeBinding.babuBottomNav.navBlog.setOnClickListener {
+        binding.babuBottomNav.navBlog.setOnClickListener {
             navController.navigate(R.id.blogFragment)
         }
-        babuHomeBinding.babuBottomNav.navAchievements.setOnClickListener {
+        binding.babuBottomNav.navAchievements.setOnClickListener {
+
             navController.navigate(R.id.achievementsFragment)
         }
 
@@ -59,12 +60,12 @@ class BabuHomeFragment : Fragment() {
 
     private fun updateSelection(id: Int) {
         val map = mapOf(
-            R.id.matchScheduleFragment to babuHomeBinding.babuBottomNav.navHome,
-            R.id.predictionsFragment to babuHomeBinding.babuBottomNav.navPredictions,
-            R.id.predictionHistoryFragment to babuHomeBinding.babuBottomNav.navHistory,
-            R.id.statsFragment to babuHomeBinding.babuBottomNav.navStats,
-            R.id.blogFragment to babuHomeBinding.babuBottomNav.navBlog,
-            R.id.achievementsFragment to babuHomeBinding.babuBottomNav.navAchievements,
+            R.id.matchScheduleFragment to binding.babuBottomNav.navHome,
+            R.id.predictionsFragment to binding.babuBottomNav.navPredictions,
+            R.id.predictionHistoryFragment to binding.babuBottomNav.navHistory,
+            R.id.statsFragment to binding.babuBottomNav.navStats,
+            R.id.blogFragment to binding.babuBottomNav.navBlog,
+            R.id.achievementsFragment to binding.babuBottomNav.navAchievements,
         )
         map.forEach { (dest, view) ->
             view.isSelected = dest == id
